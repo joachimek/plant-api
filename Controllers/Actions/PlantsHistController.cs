@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
 using plant_api.Models;
+using plant_api.Models.Actions;
 
 namespace plant_api.Controllers.ApiActions
 {
@@ -119,17 +120,29 @@ namespace plant_api.Controllers.ApiActions
         // POST: api/ApiActions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<PlantsHist>> PostApiAction(PlantsHist apiAction)
+        public async Task<ActionResult<PlantsHist>> PostApiAction(PlantHistCreate apiAction)
         {
           if (_context.ApiActions == null)
           {
               return Problem("Entity set 'PlantApiContext.ApiActions'  is null.");
           }
-            apiAction.ID = await GenerateId();
-            _context.ApiActions.Add(apiAction);
+            var ID = await GenerateId();
+            var create = new PlantsHist() { 
+                ID = ID,
+                PlantID = apiAction.plantID,
+                Sunlight = apiAction.sunlight,
+                Temperature = apiAction.temperature,
+                AirHumidity = apiAction.airHumidity,
+                SoilHumidity = apiAction.soilHumidity,
+                WateredPlant = false,
+                LampOn = false,
+                FanOn = false,
+                Date = DateTime.Now
+            };
+            _context.ApiActions.Add(create);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetApiAction", new { id = apiAction.ID }, apiAction);
+            return CreatedAtAction("GetApiAction", new { id = ID }, apiAction);
         }
 
         // DELETE: api/ApiActions/5
