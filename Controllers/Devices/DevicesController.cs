@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
-using plant_api.Models;
 using plant_api.Controllers.Common;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
+using plant_api.Helpers;
+using plant_api.Models.Device;
 
 namespace plant_api.Controllers.Devices
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class DevicesController : ControllerBase
@@ -29,26 +29,36 @@ namespace plant_api.Controllers.Devices
 
         public IList<Models.Devices>? Devices { get; set; }
 
-        // GET: api/Devices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Devices>>> GetDevice()
         {
-          if (_context.Devices == null)
-          {
-              return NotFound();
-          }
-            return await _context.Devices.ToListAsync();
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            var devices = await _context.Devices.Where(d => d.UserID == userId).ToListAsync();
+            if (devices.Any())
+            {
+                return Ok(devices);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/Devices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Devices>> GetDevice(long id)
         {
-          if (_context.Devices == null)
-          {
-              return NotFound();
-          }
-            var device = await _context.Devices.FindAsync(id);
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            var device = await _context.Devices.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
 
             if (device == null)
             {
@@ -58,17 +68,45 @@ namespace plant_api.Controllers.Devices
             return device;
         }
 
-        // PUT: api/Devices/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDevice(long id, Models.Devices device)
+        [HttpPost]
+        public async Task<ActionResult<Models.Devices>> PostDevice(Models.Devices device)
         {
-            if (id != device.ID)
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Devices == null)
             {
-                return BadRequest();
+                return Problem("Entity set 'PlantApiContext.Device'  is null.");
             }
 
-            _context.Entry(device).State = EntityState.Modified;
+            device.ID = await GenerateId();
+            device.UserID = userId;
+            _context.Devices.Add(device);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetDevice", new { id = device.ID }, device);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateDevice(long id, UpdateDeviceRequest device)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            var deviceDb = await _context.Devices.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
+
+            if (deviceDb == null)
+            {
+                return NotFound();
+            }
+
+            deviceDb.Name = device.Name;
+            deviceDb.PlantID = device.PlantID;
+
+            _context.Entry(deviceDb).State = EntityState.Modified;
 
             try
             {
@@ -89,31 +127,17 @@ namespace plant_api.Controllers.Devices
             return NoContent();
         }
 
-        // POST: api/Devices
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Models.Devices>> PostDevice(Models.Devices device)
-        {
-          if (_context.Devices == null)
-          {
-              return Problem("Entity set 'PlantApiContext.Device'  is null.");
-          }
-            device.ID = await GenerateId();
-            _context.Devices.Add(device);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDevice", new { id = device.ID }, device);
-        }
-
-        // DELETE: api/Devices/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDevice(long id)
         {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
             if (_context.Devices == null)
             {
                 return NotFound();
             }
-            var device = await _context.Devices.FindAsync(id);
+
+            var device = await _context.Devices.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
             if (device == null)
             {
                 return NotFound();
@@ -136,7 +160,7 @@ namespace plant_api.Controllers.Devices
             {
                 if (!_context.Devices.Any())
                     return 1;
-                return await _context.Devices?.MaxAsync(s => s.ID) + 1;
+                return await _context.Devices.MaxAsync(s => s.ID) + 1;
             }
             catch (Exception ex)
             {

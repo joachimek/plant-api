@@ -1,7 +1,16 @@
-﻿namespace plant_api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace plant_api.Models
 {
-    public class Users: DbItem
+    public class Users
     {
-        public long ID { get; set; }
+        public long Id { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string EmailAddress { get; set; }
+        public string Role { get; set; }
+
+        [JsonIgnore]
+        public virtual IEnumerable<Devices> Devices { get; set; }
     }
 }

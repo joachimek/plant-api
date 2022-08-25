@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
-using plant_api.Models;
+using plant_api.Helpers;
 
 namespace plant_api.Controllers.Plants
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PlantsController : ControllerBase
@@ -21,26 +21,16 @@ namespace plant_api.Controllers.Plants
             _context = context;
         }
 
-        // GET: api/Plants
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Models.Plants>>> GetPlants()
-        {
-          if (_context.Plants == null)
-          {
-              return NotFound();
-          }
-            return await _context.Plants.ToListAsync();
-        }
-
-        // GET: api/Plants/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Plants>> GetPlant(long id)
         {
-          if (_context.Plants == null)
-          {
-              return NotFound();
-          }
-            var plant = await _context.Plants.FindAsync(id);
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Plants == null)
+            {
+                 return NotFound();
+            }
+            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id && p.Device.UserID == userId);
 
             if (plant == null)
             {
@@ -50,8 +40,43 @@ namespace plant_api.Controllers.Plants
             return plant;
         }
 
-        // PUT: api/Plants/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpGet("GetByDeviceId/{deviceId}")]
+        public async Task<ActionResult<Models.Plants>> GetPlantByDeviceId(long deviceId)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Plants == null)
+            {
+                return NotFound();
+            }
+
+            var plant = await _context.Plants.Include(x => x.Device).FirstOrDefaultAsync(p => p.DeviceID == deviceId && p.Device.UserID == userId);
+
+            if (plant == null)
+            {
+                return NotFound();
+            }
+
+            return plant;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Models.Plants>> PostPlant(Models.Plants plant)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Plants == null)
+            {
+                return Problem("Entity set 'PlantApiContext.Plants'  is null.");
+            }
+
+            plant.ID = await GenerateId();
+            _context.Plants.Add(plant);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetPlant", new { id = plant.ID }, plant);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlant(long id, Models.Plants plant)
         {
@@ -81,23 +106,6 @@ namespace plant_api.Controllers.Plants
             return NoContent();
         }
 
-        // POST: api/Plants
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Models.Plants>> PostPlant(Models.Plants plant)
-        {
-          if (_context.Plants == null)
-          {
-              return Problem("Entity set 'PlantApiContext.Plants'  is null.");
-          }
-            plant.ID = await GenerateId();
-            _context.Plants.Add(plant);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPlant", new { id = plant.ID }, plant);
-        }
-
-        // DELETE: api/Plants/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlant(long id)
         {

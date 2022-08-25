@@ -28,6 +28,18 @@ namespace plant_api.Data
             modelBuilder.Entity<Reviews>().ToTable("Reviews");
             modelBuilder.Entity<Species>().ToTable("Species");
             modelBuilder.Entity<Users>().ToTable("Users");
+
+            modelBuilder.Entity<Users>()
+                .HasKey(x => x.Id);
+
+            modelBuilder.Entity<Users>()
+                .HasMany(x => x.Devices)
+                .WithOne(x => x.User);
+
+            modelBuilder.Entity<Devices>()
+                .HasOne(x => x.Plant)
+                .WithOne(x => x.Device)
+                .HasForeignKey<Plants>(x => x.DeviceID);
         }
     }
 }

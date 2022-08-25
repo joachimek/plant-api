@@ -1,4 +1,6 @@
-﻿namespace plant_api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace plant_api.Models
 {
     public class Plants : DbItem
     {
@@ -7,5 +9,8 @@
         public long GuideID { get; set; } = -1;
         public long DeviceID { get; set; }
         public string? Name { get; set; }
+
+        [JsonIgnore]
+        public virtual Devices Device { get; set; }
     }
 }

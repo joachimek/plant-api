@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
-using plant_api.Models;
+using plant_api.Helpers;
+using plant_api.Models.User;
 
 namespace plant_api.Controllers.Users
 {
@@ -21,7 +17,6 @@ namespace plant_api.Controllers.Users
             _context = context;
         }
 
-        // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Users>>> GetUsers()
         {
@@ -32,15 +27,14 @@ namespace plant_api.Controllers.Users
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Models.Users>> GetUser(long id)
+        [HttpGet("{username}")]
+        public async Task<ActionResult<Models.Users>> GetUser(long username)
         {
           if (_context.Users == null)
           {
               return NotFound();
           }
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(username);
 
             if (user == null)
             {
@@ -50,75 +44,57 @@ namespace plant_api.Controllers.Users
             return user;
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, Models.Users user)
-        {
-            if (id != user.ID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Models.Users>> PostUser(Models.Users user)
+        public async Task<ActionResult<Models.Users>> InsertUser(InsertUserRequest request)
         {
-          if (_context.Users == null)
-          {
+            if (_context.Users == null)
+            {
               return Problem("Entity set 'PlantApiContext.Users'  is null.");
-          }
+            }
+
+            var user = new Models.Users() 
+            { 
+                Password = Cryptography.MD5Hash(request.Password), 
+                Username = request.Username, 
+                EmailAddress = request.EmailAddress, 
+                Role = request.Role, 
+                Devices = new List<Models.Devices>() 
+            };   
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+            return CreatedAtAction("GetUser", new { username = request.Username }, request);
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(string userId, UpdateUserRequest request)
         {
             if (_context.Users == null)
             {
                 return NotFound();
             }
-            var user = await _context.Users.FindAsync(id);
+
+            if (!long.TryParse(userId, out var userIdParsed))
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userIdParsed);
+
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            user.Username = request.Username;
+            user.EmailAddress = request.EmailAddress;
+            user.Role = request.Role;
+
+            _context.Entry(user).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
-
-        private bool UserExists(long id)
-        {
-            return (_context.Users?.Any(e => e.ID == id)).GetValueOrDefault();
+            return CreatedAtAction("UpdateUser", new { id = userId }, request);
         }
     }
 }

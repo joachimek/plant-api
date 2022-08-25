@@ -271,3 +271,5 @@ C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\plant-api.genruntimeconfig.cache
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\ref\plant-api.dll
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
