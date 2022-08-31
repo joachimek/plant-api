@@ -20,7 +20,6 @@ namespace plant_api.Controllers.ApiActions
             _context = context;
         }
 
-        // GET: api/ApiActions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlantsHist>>> GetApiActions()
         {
@@ -31,7 +30,6 @@ namespace plant_api.Controllers.ApiActions
             return await _context.ApiActions.ToListAsync();
         }
 
-        // GET: api/ApiActions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PlantsHist>> GetApiAction(long id)
         {
@@ -49,7 +47,6 @@ namespace plant_api.Controllers.ApiActions
             return apiAction;
         }
 
-        // GET: api/ApiActions/5
         [HttpGet("GetByPlant/{id}")]
         public async Task<ActionResult<IEnumerable<PlantsHist>>> GetByPlantApiAction(long id)
         {
@@ -84,8 +81,6 @@ namespace plant_api.Controllers.ApiActions
             return apiAction;
         }
 
-        // PUT: api/ApiActions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutApiAction(long id, PlantsHist apiAction)
         {
@@ -115,8 +110,6 @@ namespace plant_api.Controllers.ApiActions
             return NoContent();
         }
 
-        // POST: api/ApiActions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<PlantsHist>> PostApiAction(PlantHistCreate apiAction)
         {
@@ -143,7 +136,6 @@ namespace plant_api.Controllers.ApiActions
             return CreatedAtAction("GetApiAction", new { id = ID }, apiAction);
         }
 
-        // DELETE: api/ApiActions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteApiAction(long id)
         {

@@ -18,7 +18,6 @@ namespace plant_api.Controllers.Species
             _context = context;
         }
 
-        // GET: api/Species
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Species>>> GetSpecies()
         {
@@ -29,7 +28,6 @@ namespace plant_api.Controllers.Species
             return await _context.Species.ToListAsync();
         }
 
-        // GET: api/Species/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Species>> GetSpecies(long id)
         {
@@ -47,8 +45,6 @@ namespace plant_api.Controllers.Species
             return species;
         }
 
-        // PUT: api/Species/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSpecies(long id, Models.Species species)
         {
@@ -78,8 +74,6 @@ namespace plant_api.Controllers.Species
             return NoContent();
         }
 
-        // POST: api/Species
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Models.Species>> PostSpecies(Models.Species species)
         {
@@ -94,7 +88,6 @@ namespace plant_api.Controllers.Species
             return CreatedAtAction("GetSpecies", new { id = species.ID }, species);
         }
 
-        // DELETE: api/Species/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpecies(long id)
         {

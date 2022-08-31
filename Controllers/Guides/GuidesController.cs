@@ -18,7 +18,6 @@ namespace plant_api.Controllers.Guides
             _context = context;
         }
 
-        // GET: api/Guides
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Guides>>> GetGuides()
         {
@@ -29,7 +28,6 @@ namespace plant_api.Controllers.Guides
             return await _context.Guides.ToListAsync();
         }
 
-        // GET: api/Guides/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Guides>> GetGuide(long id)
         {
@@ -47,8 +45,6 @@ namespace plant_api.Controllers.Guides
             return guide;
         }
 
-        // PUT: api/Guides/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGuide(long id, Models.Guides guide)
         {
@@ -78,8 +74,6 @@ namespace plant_api.Controllers.Guides
             return NoContent();
         }
 
-        // POST: api/Guides
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Models.Guides>> PostGuide(Models.Guides guide)
         {
@@ -94,7 +88,6 @@ namespace plant_api.Controllers.Guides
             return CreatedAtAction("GetGuide", new { id = guide.ID }, guide);
         }
 
-        // DELETE: api/Guides/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGuide(long id)
         {

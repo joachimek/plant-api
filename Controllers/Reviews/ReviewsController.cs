@@ -18,7 +18,6 @@ namespace plant_api.Controllers.Reviews
             _context = context;
         }
 
-        // GET: api/Reviews
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Reviews>>> GetReviews()
         {
@@ -29,7 +28,6 @@ namespace plant_api.Controllers.Reviews
             return await _context.Reviews.ToListAsync();
         }
 
-        // GET: api/Reviews/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Reviews>> GetReview(long id)
         {
@@ -47,8 +45,6 @@ namespace plant_api.Controllers.Reviews
             return review;
         }
 
-        // PUT: api/Reviews/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReview(long id, Models.Reviews review)
         {
@@ -78,8 +74,6 @@ namespace plant_api.Controllers.Reviews
             return NoContent();
         }
 
-        // POST: api/Reviews
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Models.Reviews>> PostReview(Models.Reviews review)
         {
@@ -94,7 +88,6 @@ namespace plant_api.Controllers.Reviews
             return CreatedAtAction("GetReview", new { id = review.ID }, review);
         }
 
-        // DELETE: api/Reviews/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(long id)
         {
