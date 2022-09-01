@@ -32,7 +32,11 @@ namespace plant_api.Controllers.ApiActions
                 return NotFound();
             }
 
-            var plantsHists = await _context.ApiActions.Where(d => d.Plant.Device.UserID == userId).ToListAsync();
+            var plantsHists = await _context.ApiActions.Where(ph =>
+                ph.Plant != null &&
+                ph.Plant.Device != null &&
+                ph.Plant.Device.UserID == userId
+                ).ToListAsync();
 
             if (plantsHists.Any())
             {
@@ -52,7 +56,12 @@ namespace plant_api.Controllers.ApiActions
                 return NotFound();
             }
 
-            var plantHist = await _context.ApiActions.FirstOrDefaultAsync(ph => ph.ID == id && ph.Plant.Device.UserID == userId);
+            var plantHist = await _context.ApiActions.FirstOrDefaultAsync(ph =>
+                ph.ID == id &&
+                ph.Plant != null &&
+                ph.Plant.Device != null &&
+                ph.Plant.Device.UserID == userId
+                );
 
             if (plantHist == null)
             {
@@ -62,8 +71,8 @@ namespace plant_api.Controllers.ApiActions
             return Ok(plantHist);
         }
 
-        [HttpGet("GetByPlant/{id}")]
-        public async Task<ActionResult<IEnumerable<PlantsHist>>> GetApiActionByPlant(long plantId)
+        [HttpGet("GetByPlantId/{id}")]
+        public async Task<ActionResult<IEnumerable<PlantsHist>>> GetApiActionByPlantId(long plantId)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -72,7 +81,11 @@ namespace plant_api.Controllers.ApiActions
                 return NotFound();
             }
 
-            var plantHist = await _context.ApiActions.Where(ph => ph.PlantID == plantId && ph.Plant.Device.UserID == userId).ToListAsync();
+            var plantHist = await _context.ApiActions.Where(ph =>
+                ph.PlantID == plantId &&
+                ph.Plant != null &&
+                ph.Plant.Device != null &&
+                ph.Plant.Device.UserID == userId).ToListAsync();
 
             if (plantHist.Any())
             {
@@ -93,8 +106,13 @@ namespace plant_api.Controllers.ApiActions
             }
 
             var plantHist = await _context
-                .ApiActions.Where(hist => hist.WateredPlant && hist.PlantID == id && hist.Plant.Device.UserID == userId)
-                .OrderBy(hist => hist.Date)
+                .ApiActions.Where(hist =>
+                hist.WateredPlant &&
+                hist.PlantID == id &&
+                hist.Plant != null &&
+                hist.Plant.Device != null &&
+                hist.Plant.Device.UserID == userId
+                ).OrderBy(hist => hist.Date)
                 .LastOrDefaultAsync();
 
             if (plantHist == null)

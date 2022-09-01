@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using plant_api.Data;
 using plant_api.Helpers;
@@ -28,7 +29,7 @@ namespace plant_api.Controllers.Users
         [HttpPost]
         public async Task<ActionResult<string>> LoginUser(UserLogin userLogin)
         {
-            var user = Authenticate(userLogin);
+            var user = await Authenticate(userLogin);
 
             if(user != null)
             {
@@ -39,11 +40,16 @@ namespace plant_api.Controllers.Users
             return Unauthorized();
         }
 
-        private Models.Users Authenticate(UserLogin userLogin)
+        private async Task<Models.Users?> Authenticate(UserLogin userLogin)
         {
             string hashedPassword = Cryptography.MD5Hash(userLogin.Password);
 
-            var currentUser = _context.Users.Where(u => u.Username == userLogin.Username && u.Password == hashedPassword).FirstOrDefault();
+            if(_context.Users == null)
+            {
+                return null;
+            }
+
+            var currentUser = await _context.Users.Where(u => u.Username == userLogin.Username && u.Password == hashedPassword).FirstOrDefaultAsync();
 
             if(currentUser != null)
             {

@@ -107,8 +107,8 @@ namespace plant_api.Controllers.Devices
                 return NotFound();
             }
 
-            deviceDb.Name = device.Name;
-            deviceDb.PlantID = device.PlantID;
+            deviceDb.Name = device.Name ?? deviceDb.Name;
+            deviceDb.PlantID = device.PlantID ?? deviceDb.PlantID;
 
             _context.Entry(deviceDb).State = EntityState.Modified;
 

@@ -91,7 +91,8 @@ namespace plant_api.Controllers.Guides
                 SpeciesID = request.SpeciesID,
                 UserID = userId,
                 Info = request.Info,
-                MaxHumidity = request.MaxHumidity,
+                MaxHumidity = request.MaxHumidity ?? 1.0,
+                MinHumidity = request.MinHumidity ?? 0.0,
             };
             _context.Guides.Add(guide);
             await _context.SaveChangesAsync();

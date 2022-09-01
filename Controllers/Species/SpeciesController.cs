@@ -19,7 +19,7 @@ namespace plant_api.Controllers.Species
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Models.Species>>> GetSpecies()
+        public async Task<ActionResult<IEnumerable<Models.SpeciesDto>>> GetSpecies()
         {
             if (_context.Species == null)
             {
@@ -29,7 +29,7 @@ namespace plant_api.Controllers.Species
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Models.Species>> GetSpecies(long id)
+        public async Task<ActionResult<Models.SpeciesDto>> GetSpecies(long id)
         {
             if (_context.Species == null)
             {
@@ -46,7 +46,7 @@ namespace plant_api.Controllers.Species
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.Species>> InsertSpecies(Models.Species species)
+        public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(Models.SpeciesDto species)
         {
             if (_context.Species == null)
             {
@@ -60,7 +60,7 @@ namespace plant_api.Controllers.Species
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSpecies(long id, Models.Species species)
+        public async Task<IActionResult> UpdateSpecies(long id, Models.SpeciesDto species)
         {
             if (id != species.ID)
             {

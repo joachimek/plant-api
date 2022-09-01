@@ -88,16 +88,20 @@ namespace plant_api.Controllers.Plants
                 return NotFound();
             }
 
-            var plantDb = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id && p.Device.UserID == userId);
+            var plantDb = await _context.Plants.FirstOrDefaultAsync(p =>
+                p.ID == id &&
+                p.Device != null &&
+                p.Device.UserID == userId
+            );
 
             if (plantDb == null)
             {
                 return NotFound();
             }
 
-            plantDb.Name = plant.Name;
-            plantDb.DeviceID = plant.DeviceID;
-            plantDb.SpeciesID = plant.SpeciesID;
+            plantDb.Name = plant.Name ?? plantDb.Name;
+            plantDb.DeviceID = plant.DeviceID ?? plantDb.DeviceID;
+            plantDb.SpeciesID = plant.SpeciesID ?? plantDb.DeviceID;
 
             _context.Entry(plantDb).State = EntityState.Modified;
 
