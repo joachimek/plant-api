@@ -46,6 +46,7 @@ namespace plant_api.Controllers.Species
             return species;
         }
 
+        //TODO  add authority: admin
         [HttpPost]
         public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(InsertSpeciesRequest request)
         {
@@ -67,15 +68,27 @@ namespace plant_api.Controllers.Species
             return CreatedAtAction("GetSpecies", new { id = species.ID }, species);
         }
 
+        //TODO  add authority: admin
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSpecies(long id, Models.SpeciesDto species)
+        public async Task<IActionResult> UpdateSpecies(long id, UpdateSpeciesRequest species)
         {
-            if (id != species.ID)
+            if (_context.Species == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(species).State = EntityState.Modified;
+            var speciesDb = await _context.Species.FirstOrDefaultAsync(d => d.ID == id);
+
+            if (speciesDb == null)
+            {
+                return NotFound();
+            }
+
+            speciesDb.Name = species.Name ?? speciesDb.Name;
+            speciesDb.Info = species.Info ?? speciesDb.Info;
+            speciesDb.IsPublic = species.IsPublic ?? speciesDb.IsPublic;
+
+            _context.Entry(speciesDb).State = EntityState.Modified;
 
             try
             {

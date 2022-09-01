@@ -101,14 +101,29 @@ namespace plant_api.Controllers.Guides
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateGuide(long id, Models.Guides guide)
+        public async Task<IActionResult> UpdateGuide(long id, UpdateGuideRequest guide)
         {
-            if (id != guide.ID)
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Guides == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(guide).State = EntityState.Modified;
+            var guideDb = await _context.Guides.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
+
+            if (guideDb == null)
+            {
+                return NotFound();
+            }
+
+            guideDb.SpeciesID = guide.SpeciesID ?? guideDb.SpeciesID;
+            guideDb.UserID = guide.UserID ?? guideDb.UserID;
+            guideDb.Info = guide.Info ?? guideDb.Info;
+            guideDb.MaxHumidity = guide.MaxHumidity ?? guideDb.MaxHumidity;
+            guideDb.MinHumidity = guide.MinHumidity ?? guideDb.MinHumidity;
+
+            _context.Entry(guideDb).State = EntityState.Modified;
 
             try
             {

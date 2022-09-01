@@ -165,37 +165,7 @@ namespace plant_api.Controllers.ApiActions
             return CreatedAtAction("GetApiAction", new { id = ID }, request);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateApiAction(long id, PlantsHist apiAction)
-        {
-            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
-
-            if (id != apiAction.ID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(apiAction).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ApiActionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
+        //TODO  add authority: admin
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteApiAction(long id)
         {

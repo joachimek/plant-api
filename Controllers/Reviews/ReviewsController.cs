@@ -88,35 +88,7 @@ namespace plant_api.Controllers.Reviews
             return CreatedAtAction("GetReview", new { id = review.ID }, review);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(long id, Models.Reviews review)
-        {
-            if (id != review.ID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(review).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
+        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(long id)
         {
