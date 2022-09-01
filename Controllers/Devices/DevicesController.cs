@@ -134,7 +134,6 @@ namespace plant_api.Controllers.Devices
             return NoContent();
         }
 
-        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDevice(long id)
         {
@@ -146,6 +145,28 @@ namespace plant_api.Controllers.Devices
             }
 
             var device = await _context.Devices.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
+
+            if (device == null)
+            {
+                return NotFound();
+            }
+
+            _context.Devices.Remove(device);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("ForceDelete/{id}")]
+        public async Task<IActionResult> ForceDeleteDevice(long id)
+        {
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            var device = await _context.Devices.FirstOrDefaultAsync(d => d.ID == id);
             if (device == null)
             {
                 return NotFound();

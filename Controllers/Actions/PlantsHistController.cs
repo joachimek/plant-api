@@ -165,7 +165,7 @@ namespace plant_api.Controllers.ApiActions
             return CreatedAtAction("GetApiAction", new { id = ID }, request);
         }
 
-        //TODO  add authority: admin
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteApiAction(long id)
         {

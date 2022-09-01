@@ -136,11 +136,37 @@ namespace plant_api.Controllers.Plants
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlant(long id)
         {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
             if (_context.Plants == null)
             {
                 return NotFound();
             }
-            var plant = await _context.Plants.FindAsync(id);
+
+            var plant = await _context.Plants.FirstOrDefaultAsync(d => d.ID == id && d.Device != null && d.Device.UserID == userId);
+
+            if (plant == null)
+            {
+                return NotFound();
+            }
+
+            _context.Plants.Remove(plant);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("ForceDelete/{id}")]
+        public async Task<IActionResult> ForceDeletePlant(long id)
+        {
+            if (_context.Plants == null)
+            {
+                return NotFound();
+            }
+
+            var plant = await _context.Plants.FirstOrDefaultAsync(d => d.ID == id);
+
             if (plant == null)
             {
                 return NotFound();

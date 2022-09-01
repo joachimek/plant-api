@@ -46,7 +46,7 @@ namespace plant_api.Controllers.Species
             return species;
         }
 
-        //TODO  add authority: admin
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(InsertSpeciesRequest request)
         {
@@ -68,7 +68,7 @@ namespace plant_api.Controllers.Species
             return CreatedAtAction("GetSpecies", new { id = species.ID }, species);
         }
 
-        //TODO  add authority: admin
+        [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSpecies(long id, UpdateSpeciesRequest species)
         {
@@ -110,7 +110,7 @@ namespace plant_api.Controllers.Species
             return NoContent();
         }
 
-        //TODO  add authority: admin
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpecies(long id)
         {

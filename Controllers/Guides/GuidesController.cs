@@ -149,11 +149,37 @@ namespace plant_api.Controllers.Guides
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGuide(long id)
         {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
             if (_context.Guides == null)
             {
                 return NotFound();
             }
-            var guide = await _context.Guides.FindAsync(id);
+
+            var guide = await _context.Guides.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
+
+            if (guide == null)
+            {
+                return NotFound();
+            }
+
+            _context.Guides.Remove(guide);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("ForceDelete/{id}")]
+        public async Task<IActionResult> ForceDeleteGuide(long id)
+        {
+            if (_context.Guides == null)
+            {
+                return NotFound();
+            }
+
+            var guide = await _context.Guides.FirstOrDefaultAsync(d => d.ID == id);
+
             if (guide == null)
             {
                 return NotFound();

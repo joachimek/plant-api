@@ -88,9 +88,32 @@ namespace plant_api.Controllers.Reviews
             return CreatedAtAction("GetReview", new { id = review.ID }, review);
         }
 
-        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(long id)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Reviews == null)
+            {
+                return NotFound();
+            }
+
+            var review = await _context.Reviews.FirstOrDefaultAsync(d => d.ID == id && d.UserID == userId);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("ForceDelete/{id}")]
+        public async Task<IActionResult> ForceDeleteReview(long id)
         {
             if (_context.Reviews == null)
             {

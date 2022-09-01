@@ -47,6 +47,7 @@ namespace plant_api.Controllers.Users
             return user;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<Models.Users>> InsertUser(InsertUserRequest request)
         {
@@ -70,7 +71,7 @@ namespace plant_api.Controllers.Users
             return CreatedAtAction("GetUser", new { username = request.Username }, user);
         }
 
-        //TODO  add authority: admin
+        [Authorize(Roles = "Administrator")]
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UpdateUserRequest request)
         {
