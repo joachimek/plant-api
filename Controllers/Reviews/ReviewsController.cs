@@ -28,7 +28,7 @@ namespace plant_api.Controllers.Reviews
             return await _context.Reviews.ToListAsync();
         }
 
-        [HttpGet]
+        [HttpGet("GetByGuideId/{guideId}")]
         public async Task<ActionResult<IEnumerable<Models.Reviews>>> GetReviewsByGuide(long guideId)
         {
             if (_context.Reviews == null)

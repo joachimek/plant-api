@@ -36,7 +36,7 @@ namespace plant_api.Controllers.Guides
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("GetBySpeciesId/{speciesId}")]
         public async Task<ActionResult<IEnumerable<Models.Guides>>> GetGuidesBySpecies(long speciesId)
         {
             if (_context.Guides == null)
