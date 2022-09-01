@@ -12,5 +12,7 @@ namespace plant_api.Models
 
         [JsonIgnore]
         public virtual Devices Device { get; set; }
+        [JsonIgnore]
+        public virtual IEnumerable<PlantsHist> PlantsHists { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace plant_api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace plant_api.Models
 {
     public class PlantsHist : DbItem
     {
@@ -12,5 +14,8 @@
         public bool WateredPlant { get; set; }
         public bool LampOn { get; set; }
         public bool FanOn { get; set; }
+
+        [JsonIgnore]
+        public virtual Plants Plant { get; set; }
     }
 }

@@ -28,6 +28,24 @@ namespace plant_api.Controllers.Reviews
             return await _context.Reviews.ToListAsync();
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Models.Reviews>>> GetReviewsByGuide(long guideId)
+        {
+            if (_context.Reviews == null)
+            {
+                return NotFound();
+            }
+
+            var reviews = await _context.Reviews.Where(g => g.GuideID == guideId).ToListAsync();
+
+            if (reviews.Any())
+            {
+                return Ok(reviews);
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Reviews>> GetReview(long id)
         {
@@ -116,11 +134,11 @@ namespace plant_api.Controllers.Reviews
         {
             try
             {
-                if (!_context.Reviews.Any())
+                if (_context.Reviews == null || !_context.Reviews.Any())
                     return 1;
-                return await _context.Reviews?.MaxAsync(s => s.ID) + 1;
+                return await _context.Reviews.MaxAsync(s => s.ID) + 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

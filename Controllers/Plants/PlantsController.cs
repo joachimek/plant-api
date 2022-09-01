@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
 using plant_api.Helpers;
+using plant_api.Models.Plant;
 
 namespace plant_api.Controllers.Plants
 {
@@ -61,7 +62,7 @@ namespace plant_api.Controllers.Plants
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.Plants>> PostPlant(Models.Plants plant)
+        public async Task<ActionResult<Models.Plants>> InsertPlant(Models.Plants plant)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -78,14 +79,27 @@ namespace plant_api.Controllers.Plants
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlant(long id, Models.Plants plant)
+        public async Task<IActionResult> UpdatePlant(long id, UpdatePlantRequest plant)
         {
-            if (id != plant.ID)
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Plants == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(plant).State = EntityState.Modified;
+            var plantDb = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id && p.Device.UserID == userId);
+
+            if (plantDb == null)
+            {
+                return NotFound();
+            }
+
+            plantDb.Name = plant.Name;
+            plantDb.DeviceID = plant.DeviceID;
+            plantDb.SpeciesID = plant.SpeciesID;
+
+            _context.Entry(plantDb).State = EntityState.Modified;
 
             try
             {
@@ -106,6 +120,7 @@ namespace plant_api.Controllers.Plants
             return NoContent();
         }
 
+        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlant(long id)
         {
@@ -134,11 +149,11 @@ namespace plant_api.Controllers.Plants
         {
             try
             {
-                if (!_context.Plants.Any())
+                if (_context.Plants == null || !_context.Plants.Any())
                     return 1;
-                return await _context.Plants?.MaxAsync(s => s.ID) + 1;
+                return await _context.Plants.MaxAsync(s => s.ID) + 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

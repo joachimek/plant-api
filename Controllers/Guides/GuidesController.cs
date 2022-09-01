@@ -21,20 +21,47 @@ namespace plant_api.Controllers.Guides
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Guides>>> GetGuides()
         {
-          if (_context.Guides == null)
-          {
-              return NotFound();
-          }
-            return await _context.Guides.ToListAsync();
+            if (_context.Guides == null)
+            {
+                return NotFound();
+            }
+            
+            var guides = await _context.Guides.ToListAsync();
+
+            if (guides.Any())
+            {
+                return Ok(guides);
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Models.Guides>>> GetGuidesBySpecies(long speciesId)
+        {
+            if (_context.Guides == null)
+            {
+                return NotFound();
+            }
+
+            var guides = await _context.Guides.Where(g => g.SpeciesID == speciesId).ToListAsync();
+
+            if (guides.Any())
+            {
+                return Ok(guides);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Guides>> GetGuide(long id)
         {
-          if (_context.Guides == null)
-          {
-              return NotFound();
-          }
+            if (_context.Guides == null)
+            {
+                return NotFound();
+            }
+
             var guide = await _context.Guides.FindAsync(id);
 
             if (guide == null)
@@ -42,11 +69,26 @@ namespace plant_api.Controllers.Guides
                 return NotFound();
             }
 
-            return guide;
+            return Ok(guide);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Models.Guides>> InsertGuide(Models.Guides guide)
+        {
+            if (_context.Guides == null)
+            {
+                return Problem("Entity set 'PlantApiContext.Guides'  is null.");
+            }
+
+            guide.ID = await GenerateId();
+            _context.Guides.Add(guide);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetGuide", new { id = guide.ID }, guide);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGuide(long id, Models.Guides guide)
+        public async Task<IActionResult> UpdateGuide(long id, Models.Guides guide)
         {
             if (id != guide.ID)
             {
@@ -74,20 +116,7 @@ namespace plant_api.Controllers.Guides
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Models.Guides>> PostGuide(Models.Guides guide)
-        {
-          if (_context.Guides == null)
-          {
-              return Problem("Entity set 'PlantApiContext.Guides'  is null.");
-          }
-            guide.ID = await GenerateId();
-            _context.Guides.Add(guide);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGuide", new { id = guide.ID }, guide);
-        }
-
+        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGuide(long id)
         {
@@ -116,11 +145,11 @@ namespace plant_api.Controllers.Guides
         {
             try
             {
-                if (!_context.Guides.Any())
+                if (_context.Guides == null || !_context.Guides.Any())
                     return 1;
-                return await _context.Guides?.MaxAsync(s => s.ID) + 1;
+                return await _context.Guides.MaxAsync(s => s.ID) + 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

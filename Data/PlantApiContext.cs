@@ -40,6 +40,10 @@ namespace plant_api.Data
                 .HasOne(x => x.Plant)
                 .WithOne(x => x.Device)
                 .HasForeignKey<Plants>(x => x.DeviceID);
+
+            modelBuilder.Entity<Plants>()
+                .HasMany(x => x.PlantsHists)
+                .WithOne(x => x.Plant);
         }
     }
 }

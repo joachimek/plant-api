@@ -21,20 +21,20 @@ namespace plant_api.Controllers.Species
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Species>>> GetSpecies()
         {
-          if (_context.Species == null)
-          {
-              return NotFound();
-          }
+            if (_context.Species == null)
+            {
+                return NotFound();
+            }
             return await _context.Species.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Species>> GetSpecies(long id)
         {
-          if (_context.Species == null)
-          {
-              return NotFound();
-          }
+            if (_context.Species == null)
+            {
+                return NotFound();
+            }
             var species = await _context.Species.FindAsync(id);
 
             if (species == null)
@@ -45,8 +45,22 @@ namespace plant_api.Controllers.Species
             return species;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<Models.Species>> InsertSpecies(Models.Species species)
+        {
+            if (_context.Species == null)
+            {
+                return Problem("Entity set 'PlantApiContext.Species'  is null.");
+            }
+            species.ID = await GenerateId();
+            _context.Species.Add(species);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetSpecies", new { id = species.ID }, species);
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSpecies(long id, Models.Species species)
+        public async Task<IActionResult> UpdateSpecies(long id, Models.Species species)
         {
             if (id != species.ID)
             {
@@ -74,20 +88,7 @@ namespace plant_api.Controllers.Species
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Models.Species>> PostSpecies(Models.Species species)
-        {
-          if (_context.Species == null)
-          {
-              return Problem("Entity set 'PlantApiContext.Species'  is null.");
-          }
-            species.ID = await GenerateId();
-            _context.Species.Add(species);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSpecies", new { id = species.ID }, species);
-        }
-
+        //TODO  add authority: admin
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpecies(long id)
         {
@@ -116,11 +117,11 @@ namespace plant_api.Controllers.Species
         {
             try
             {
-                if (!_context.Species.Any())
+                if (_context.Species == null || !_context.Species.Any())
                     return 1;
-                return await _context.Species?.MaxAsync(s => s.ID) + 1;
+                return await _context.Species.MaxAsync(s => s.ID) + 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

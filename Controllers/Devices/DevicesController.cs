@@ -40,6 +40,7 @@ namespace plant_api.Controllers.Devices
             }
 
             var devices = await _context.Devices.Where(d => d.UserID == userId).ToListAsync();
+
             if (devices.Any())
             {
                 return Ok(devices);
@@ -65,11 +66,11 @@ namespace plant_api.Controllers.Devices
                 return NotFound();
             }
 
-            return device;
+            return Ok(device);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.Devices>> PostDevice(Models.Devices device)
+        public async Task<ActionResult<Models.Devices>> InsertDevice(Models.Devices device)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -127,6 +128,7 @@ namespace plant_api.Controllers.Devices
             return NoContent();
         }
 
+        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDevice(long id)
         {
@@ -158,11 +160,11 @@ namespace plant_api.Controllers.Devices
         {
             try
             {
-                if (!_context.Devices.Any())
+                if (_context.Devices == null || !_context.Devices.Any() )
                     return 1;
                 return await _context.Devices.MaxAsync(s => s.ID) + 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
