@@ -93,6 +93,7 @@ namespace plant_api.Controllers.Species
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(speciesDb);
             }
             catch (DbUpdateConcurrencyException)
             {

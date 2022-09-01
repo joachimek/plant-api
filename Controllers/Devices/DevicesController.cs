@@ -117,6 +117,7 @@ namespace plant_api.Controllers.Devices
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(deviceDb);
             }
             catch (DbUpdateConcurrencyException)
             {

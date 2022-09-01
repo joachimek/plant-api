@@ -128,6 +128,7 @@ namespace plant_api.Controllers.Guides
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(guideDb);
             }
             catch (DbUpdateConcurrencyException)
             {

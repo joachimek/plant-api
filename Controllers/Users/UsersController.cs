@@ -69,6 +69,7 @@ namespace plant_api.Controllers.Users
             return CreatedAtAction("GetUser", new { username = request.Username }, user);
         }
 
+        //TODO  add authority: admin
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UpdateUserRequest request)
         {
@@ -89,15 +90,21 @@ namespace plant_api.Controllers.Users
                 return NotFound();
             }
 
-            user.Username = request.Username;
-            user.EmailAddress = request.EmailAddress;
-            user.Role = request.Role;
+            user.Username = request.Username ?? user.Username;
+            user.EmailAddress = request.EmailAddress ?? user.EmailAddress;
+            user.Role = request.Role ?? user.Role;
 
             _context.Entry(user).State = EntityState.Modified;
 
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("UpdateUser", new { id = userId }, request);
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(user);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
         }
     }
 }

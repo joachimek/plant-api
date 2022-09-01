@@ -115,6 +115,7 @@ namespace plant_api.Controllers.Plants
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(plantDb);
             }
             catch (DbUpdateConcurrencyException)
             {
