@@ -62,7 +62,7 @@ namespace plant_api.Controllers.Plants
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.Plants>> InsertPlant(Models.Plants plant)
+        public async Task<ActionResult<Models.Plants>> InsertPlant(InsertPlantRequest request)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -71,7 +71,14 @@ namespace plant_api.Controllers.Plants
                 return Problem("Entity set 'PlantApiContext.Plants'  is null.");
             }
 
-            plant.ID = await GenerateId();
+            var plant = new Models.Plants()
+            {
+                ID = await GenerateId(),
+                SpeciesID = request.SpeciesID,
+                DeviceID = request.DeviceID,
+                GuideID = request.GuideID,
+                Name = request.Name,
+            };
             _context.Plants.Add(plant);
             await _context.SaveChangesAsync();
 

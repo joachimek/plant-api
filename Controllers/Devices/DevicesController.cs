@@ -83,6 +83,8 @@ namespace plant_api.Controllers.Devices
             {
                 ID = await GenerateId(),
                 UserID = userId,
+                PlantID = request.PlantID,
+                Name = request.Name,
             };
             _context.Devices.Add(device);
             await _context.SaveChangesAsync();

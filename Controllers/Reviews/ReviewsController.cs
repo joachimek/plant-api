@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
+using plant_api.Helpers;
+using plant_api.Models.Review;
+using System.Security.Claims;
 
 namespace plant_api.Controllers.Reviews
 {
@@ -63,8 +66,30 @@ namespace plant_api.Controllers.Reviews
             return review;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<Models.Reviews>> PostReview(InsertReviewRequest request)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.Reviews == null)
+            {
+                return Problem("Entity set 'PlantApiContext.Reviews'  is null.");
+            }
+
+            var review = new Models.Reviews()
+            {
+                ID = await GenerateId(),
+                UserID = userId,
+                GuideID = request.GuideID,
+            };
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetReview", new { id = review.ID }, review);
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReview(long id, Models.Reviews review)
+        public async Task<IActionResult> UpdateReview(long id, Models.Reviews review)
         {
             if (id != review.ID)
             {
@@ -90,20 +115,6 @@ namespace plant_api.Controllers.Reviews
             }
 
             return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Models.Reviews>> PostReview(Models.Reviews review)
-        {
-          if (_context.Reviews == null)
-          {
-              return Problem("Entity set 'PlantApiContext.Reviews'  is null.");
-          }
-            review.ID = await GenerateId();
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReview", new { id = review.ID }, review);
         }
 
         [HttpDelete("{id}")]

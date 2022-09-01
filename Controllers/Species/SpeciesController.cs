@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
+using plant_api.Models.Species;
 
 namespace plant_api.Controllers.Species
 {
@@ -46,13 +47,20 @@ namespace plant_api.Controllers.Species
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(Models.SpeciesDto species)
+        public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(InsertSpeciesRequest request)
         {
             if (_context.Species == null)
             {
                 return Problem("Entity set 'PlantApiContext.Species'  is null.");
             }
-            species.ID = await GenerateId();
+
+            var species = new Models.SpeciesDto()
+            {
+                ID = await GenerateId(),
+                Name = request.Name,
+                Info = request.Info,
+                IsPublic = request.IsPublic,
+            };
             _context.Species.Add(species);
             await _context.SaveChangesAsync();
 
