@@ -2,8 +2,8 @@
 {
     public class UpdatePlantRequest
     {
-        public long SpeciesID { get; set; }
-        public long DeviceID { get; set; }
-        public string Name { get; set; }
+        public long? SpeciesID { get; set; }
+        public long? DeviceID { get; set; }
+        public string? Name { get; set; }
     }
 }

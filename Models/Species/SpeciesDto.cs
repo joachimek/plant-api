@@ -2,7 +2,7 @@
 
 namespace plant_api.Models
 {
-    public class Species: DbItem
+    public class SpeciesDto : DbItem
     {
         public long ID { get; set; }
         public string Name { get; set; } = "Unknown plant";
@@ -10,8 +10,8 @@ namespace plant_api.Models
         public bool IsPublic { get; set; }
 
         [JsonIgnore]
-        public virtual IEnumerable<Plants> Plants { get; set; }
+        public virtual IEnumerable<Plants>? Plants { get; set; }
         [JsonIgnore]
-        public virtual IEnumerable<Guides> Guides { get; set; }
+        public virtual IEnumerable<Guides>? Guides { get; set; }
     }
 }

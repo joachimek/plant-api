@@ -31,7 +31,7 @@ namespace plant_api.Controllers.Plants
             {
                  return NotFound();
             }
-            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id && p.Device.UserID == userId);
+            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id && p.Device != null && p.Device.UserID == userId);
 
             if (plant == null)
             {
@@ -51,7 +51,7 @@ namespace plant_api.Controllers.Plants
                 return NotFound();
             }
 
-            var plant = await _context.Plants.Include(x => x.Device).FirstOrDefaultAsync(p => p.DeviceID == deviceId && p.Device.UserID == userId);
+            var plant = await _context.Plants.Include(x => x.Device).FirstOrDefaultAsync(p => p.DeviceID == deviceId && p.Device != null && p.Device.UserID == userId);
 
             if (plant == null)
             {

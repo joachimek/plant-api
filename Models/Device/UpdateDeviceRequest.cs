@@ -2,7 +2,7 @@
 {
     public class UpdateDeviceRequest
     {
-        public long PlantID { get; set; } 
-        public string Name { get; set; }
+        public long? PlantID { get; set; } 
+        public string? Name { get; set; }
     }
 }

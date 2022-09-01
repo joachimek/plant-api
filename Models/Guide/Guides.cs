@@ -5,18 +5,19 @@ namespace plant_api.Models
     public class Guides: DbItem
     {
         public long ID { get; set; }
-        public long SpeciesID { get; set; }
-        public long UserID { get; set; }
+        public long SpeciesID { get; set; } = -1;
+        public long UserID { get; set; } = -1;
         public string? Info { get; set; }
-        public double MaxHumidity { get; set; }
+        public double MaxHumidity { get; set; } = 1.00;
+        public double MinHumidity { get; set; } = 0.00;
 
         [JsonIgnore]
-        public virtual Species Species { get; set; }
+        public virtual SpeciesDto? Species { get; set; }
         [JsonIgnore]
-        public virtual Users User { get; set; }
+        public virtual Users? User { get; set; }
         [JsonIgnore]
-        public virtual IEnumerable<Plants> Plants { get; set; }
+        public virtual IEnumerable<Plants>? Plants { get; set; }
         [JsonIgnore]
-        public virtual IEnumerable<Reviews> Reviews { get; set; }
+        public virtual IEnumerable<Reviews>? Reviews { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace plant_api.Data
         public DbSet<Guides>? Guides { get; set; }
         public DbSet<Plants>? Plants { get; set; }
         public DbSet<Reviews>? Reviews { get; set; }
-        public DbSet<Species>? Species { get; set; }
+        public DbSet<SpeciesDto>? Species { get; set; }
         public DbSet<Users>? Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace plant_api.Data
             modelBuilder.Entity<Guides>().ToTable("Guides");
             modelBuilder.Entity<Plants>().ToTable("Plants");
             modelBuilder.Entity<Reviews>().ToTable("Reviews");
-            modelBuilder.Entity<Species>().ToTable("Species");
+            modelBuilder.Entity<SpeciesDto>().ToTable("Species");
             modelBuilder.Entity<Users>().ToTable("Users");
 
             modelBuilder.Entity<Devices>()
@@ -42,11 +42,11 @@ namespace plant_api.Data
                 .HasMany(x => x.PlantsHists)
                 .WithOne(x => x.Plant);
 
-            modelBuilder.Entity<Species>()
+            modelBuilder.Entity<SpeciesDto>()
                 .HasMany(x => x.Guides)
                 .WithOne(x => x.Species);
 
-            modelBuilder.Entity<Species>()
+            modelBuilder.Entity<SpeciesDto>()
                .HasMany(x => x.Plants)
                .WithOne(x => x.Species);
 

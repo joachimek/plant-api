@@ -10,8 +10,8 @@ namespace plant_api.Models
         public string Name { get; set; } = String.Empty;
 
         [JsonIgnore]
-        public virtual Users User { get; set; }
+        public virtual Users? User { get; set; }
         [JsonIgnore]
-        public virtual Plants Plant { get; set; }
+        public virtual Plants? Plant { get; set; }
     }
 }

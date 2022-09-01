@@ -62,11 +62,11 @@ namespace plant_api.Controllers.Users
                 EmailAddress = request.EmailAddress, 
                 Role = request.Role, 
                 Devices = new List<Models.Devices>() 
-            };   
+            };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { username = request.Username }, request);
+            return CreatedAtAction("GetUser", new { username = request.Username }, user);
         }
 
         [HttpPut("{userId}")]

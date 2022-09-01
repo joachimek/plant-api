@@ -5,12 +5,12 @@ namespace plant_api.Models
     public class Reviews: DbItem
     {
         public long ID { get; set; }
-        public long UserID { get; set; }
-        public long GuideID { get; set; }
+        public long UserID { get; set; } = -1;
+        public long GuideID { get; set; } = -1;
 
         [JsonIgnore]
-        public virtual Users User { get; set; }
+        public virtual Users? User { get; set; }
         [JsonIgnore]
-        public virtual Guides Guide { get; set; }
+        public virtual Guides? Guide { get; set; }
     }
 }

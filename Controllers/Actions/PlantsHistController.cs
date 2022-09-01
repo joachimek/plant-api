@@ -106,7 +106,7 @@ namespace plant_api.Controllers.ApiActions
         }
 
         [HttpPost]
-        public async Task<ActionResult<PlantsHist>> InsertApiAction(PlantHistCreate apiAction)
+        public async Task<ActionResult<PlantsHist>> InsertApiAction(InsertPlantHistRequest request)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -114,15 +114,28 @@ namespace plant_api.Controllers.ApiActions
             {
                 return Problem("Entity set 'PlantApiContext.ApiActions'  is null.");
             }
+            
+            if (_context.Plants == null)
+            {
+                return BadRequest();
+            }
+
+            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == request.PlantID);
+
+            if (plant == null || plant.Device == null || userId != plant.Device.UserID)
+            {
+                return BadRequest();
+            }
 
             var ID = await GenerateId();
+
             var create = new PlantsHist() { 
                 ID = ID,
-                PlantID = apiAction.plantID,
-                Sunlight = apiAction.sunlight,
-                Temperature = apiAction.temperature,
-                AirHumidity = apiAction.airHumidity,
-                SoilHumidity = apiAction.soilHumidity,
+                PlantID = request.PlantID,
+                Sunlight = request.Sunlight ?? false,
+                Temperature = request.Temperature ?? "NaN",
+                AirHumidity = request.AirHumidity ?? "NaN",
+                SoilHumidity = request.SoilHumidity ?? "NaN",
                 WateredPlant = false,
                 LampOn = false,
                 FanOn = false,
@@ -131,7 +144,7 @@ namespace plant_api.Controllers.ApiActions
             _context.ApiActions.Add(create);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetApiAction", new { id = ID }, apiAction);
+            return CreatedAtAction("GetApiAction", new { id = ID }, request);
         }
 
         [HttpPut("{id}")]

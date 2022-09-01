@@ -70,7 +70,7 @@ namespace plant_api.Controllers.Devices
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.Devices>> InsertDevice(Models.Devices device)
+        public async Task<ActionResult<Models.Devices>> InsertDevice(InsertDeviceRequest request)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -79,8 +79,11 @@ namespace plant_api.Controllers.Devices
                 return Problem("Entity set 'PlantApiContext.Device'  is null.");
             }
 
-            device.ID = await GenerateId();
-            device.UserID = userId;
+            var device = new Models.Devices()
+            {
+                ID = await GenerateId(),
+                UserID = userId,
+            };
             _context.Devices.Add(device);
             await _context.SaveChangesAsync();
 

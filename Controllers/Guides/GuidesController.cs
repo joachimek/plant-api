@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
+using plant_api.Helpers;
+using plant_api.Models.Guide;
+using System.Security.Claims;
 
 namespace plant_api.Controllers.Guides
 {
@@ -73,14 +76,23 @@ namespace plant_api.Controllers.Guides
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.Guides>> InsertGuide(Models.Guides guide)
+        public async Task<ActionResult<Models.Guides>> InsertGuide(InsertGuideRequest request)
         {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
             if (_context.Guides == null)
             {
                 return Problem("Entity set 'PlantApiContext.Guides'  is null.");
             }
 
-            guide.ID = await GenerateId();
+            var guide = new Models.Guides()
+            {
+                ID = await GenerateId(),
+                SpeciesID = request.SpeciesID,
+                UserID = userId,
+                Info = request.Info,
+                MaxHumidity = request.MaxHumidity,
+            };
             _context.Guides.Add(guide);
             await _context.SaveChangesAsync();
 

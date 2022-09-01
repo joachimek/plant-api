@@ -11,10 +11,10 @@ namespace plant_api.Models
         public string Role { get; set; }
 
         [JsonIgnore]
-        public virtual IEnumerable<Devices> Devices { get; set; }
+        public virtual IEnumerable<Devices>? Devices { get; set; }
         [JsonIgnore]
-        public virtual IEnumerable<Guides> Guides { get; set; }
+        public virtual IEnumerable<Guides>? Guides { get; set; }
         [JsonIgnore]
-        public virtual IEnumerable<Reviews> Reviews { get; set; }
+        public virtual IEnumerable<Reviews>? Reviews { get; set; }
     }
 }
