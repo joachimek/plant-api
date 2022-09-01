@@ -128,12 +128,12 @@ namespace plant_api.Controllers.ApiActions
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
-            if (_context.ApiActions == null)
+            if (_context.ApiActions == null )
             {
                 return Problem("Entity set 'PlantApiContext.ApiActions'  is null.");
             }
             
-            if (_context.Plants == null)
+            if (_context.Guides == null || _context.Plants == null)
             {
                 return BadRequest();
             }
@@ -147,14 +147,20 @@ namespace plant_api.Controllers.ApiActions
 
             var ID = await GenerateId();
 
+            var guide = await _context.Guides.FirstOrDefaultAsync(p => p.ID == plant.GuideID);
+            var minHumidity = guide?.MinHumidity ?? 0;
+            var soilHumidity = request?.SoilHumidity ?? "1";
+
+            var waterPlant = minHumidity > (Double.Parse(soilHumidity));
+
             var create = new PlantsHist() { 
                 ID = ID,
-                PlantID = request.PlantID,
-                Sunlight = request.Sunlight ?? false,
-                Temperature = request.Temperature ?? "NaN",
-                AirHumidity = request.AirHumidity ?? "NaN",
-                SoilHumidity = request.SoilHumidity ?? "NaN",
-                WateredPlant = false,
+                PlantID = request?.PlantID ?? -1,
+                Sunlight = request?.Sunlight ?? false,
+                Temperature = request?.Temperature ?? "NaN",
+                AirHumidity = request?.AirHumidity ?? "NaN",
+                SoilHumidity = request?.SoilHumidity ?? "NaN",
+                WateredPlant = waterPlant,
                 LampOn = false,
                 FanOn = false,
                 Date = DateTime.Now
