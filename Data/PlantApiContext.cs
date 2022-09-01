@@ -29,6 +29,31 @@ namespace plant_api.Data
             modelBuilder.Entity<Species>().ToTable("Species");
             modelBuilder.Entity<Users>().ToTable("Users");
 
+            modelBuilder.Entity<Devices>()
+                .HasOne(x => x.Plant)
+                .WithOne(x => x.Device)
+                .HasForeignKey<Plants>(x => x.DeviceID);
+
+            modelBuilder.Entity<Guides>()
+                .HasMany(x => x.Reviews)
+                .WithOne(x => x.Guide);
+
+            modelBuilder.Entity<Guides>()
+                .HasMany(x => x.Plants)
+                .WithOne(x => x.Guide);
+
+            modelBuilder.Entity<Plants>()
+                .HasMany(x => x.PlantsHists)
+                .WithOne(x => x.Plant);
+
+            modelBuilder.Entity<Species>()
+                .HasMany(x => x.Guides)
+                .WithOne(x => x.Species);
+
+            modelBuilder.Entity<Species>()
+               .HasMany(x => x.Plants)
+               .WithOne(x => x.Species);
+
             modelBuilder.Entity<Users>()
                 .HasKey(x => x.Id);
 
@@ -36,14 +61,14 @@ namespace plant_api.Data
                 .HasMany(x => x.Devices)
                 .WithOne(x => x.User);
 
-            modelBuilder.Entity<Devices>()
-                .HasOne(x => x.Plant)
-                .WithOne(x => x.Device)
-                .HasForeignKey<Plants>(x => x.DeviceID);
+            modelBuilder.Entity<Users>()
+               .HasMany(x => x.Guides)
+               .WithOne(x => x.User);
 
-            modelBuilder.Entity<Plants>()
-                .HasMany(x => x.PlantsHists)
-                .WithOne(x => x.Plant);
+            modelBuilder.Entity<Users>()
+                .HasMany(x => x.Reviews)
+                .WithOne(x => x.User);
+
         }
     }
 }

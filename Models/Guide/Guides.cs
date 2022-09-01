@@ -15,6 +15,8 @@ namespace plant_api.Models
         [JsonIgnore]
         public virtual Users User { get; set; }
         [JsonIgnore]
+        public virtual IEnumerable<Plants> Plants { get; set; }
+        [JsonIgnore]
         public virtual IEnumerable<Reviews> Reviews { get; set; }
     }
 }
