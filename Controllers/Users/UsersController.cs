@@ -57,6 +57,7 @@ namespace plant_api.Controllers.Users
 
             var user = new Models.Users() 
             { 
+                Id = await GenerateId(),
                 Password = Cryptography.MD5Hash(request.Password), 
                 Username = request.Username, 
                 EmailAddress = request.EmailAddress, 
@@ -102,6 +103,20 @@ namespace plant_api.Controllers.Users
                 return Ok(user);
             }
             catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+        }
+
+        private async Task<long> GenerateId()
+        {
+            try
+            {
+                if (_context.Users == null || !_context.Users.Any())
+                    return 1;
+                return await _context.Users.MaxAsync(s => s.Id) + 1;
+            }
+            catch (Exception)
             {
                 throw;
             }
