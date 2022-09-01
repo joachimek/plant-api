@@ -11,6 +11,10 @@ namespace plant_api.Models
         public string? Name { get; set; }
 
         [JsonIgnore]
+        public virtual Species Species { get; set; }
+        [JsonIgnore]
+        public virtual Guides Guide{ get; set; }
+        [JsonIgnore]
         public virtual Devices Device { get; set; }
         [JsonIgnore]
         public virtual IEnumerable<PlantsHist> PlantsHists { get; set; }
