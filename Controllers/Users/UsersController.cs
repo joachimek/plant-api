@@ -33,10 +33,10 @@ namespace plant_api.Controllers.Users
         [HttpGet("{username}")]
         public async Task<ActionResult<Models.Users>> GetUser(long username)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             var user = await _context.Users.FindAsync(username);
 
             if (user == null)
