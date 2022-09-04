@@ -145,8 +145,6 @@ namespace plant_api.Controllers.ApiActions
                 return BadRequest();
             }
 
-            var ID = await GenerateId();
-
             var guide = await _context.Guides.FirstOrDefaultAsync(p => p.ID == plant.GuideID);
             var minHumidity = guide?.MinHumidity ?? 0;
             var soilHumidity = request?.SoilHumidity ?? "1";
@@ -167,7 +165,7 @@ namespace plant_api.Controllers.ApiActions
             _context.ApiActions.Add(create);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetApiAction", new { id = ID }, request);
+            return CreatedAtAction("GetApiAction", create, request);
         }
 
         [Authorize(Roles = "admin")]

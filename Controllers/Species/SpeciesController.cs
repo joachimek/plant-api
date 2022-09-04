@@ -102,11 +102,9 @@ namespace plant_api.Controllers.Species
                 }
                 else
                 {
-                    throw;
+                    return NoContent();
                 }
             }
-
-            return NoContent();
         }
 
         [Authorize(Roles = "Administrator")]

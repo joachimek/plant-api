@@ -137,11 +137,9 @@ namespace plant_api.Controllers.Guides
                 }
                 else
                 {
-                    throw;
+                    return NoContent();
                 }
             }
-
-            return NoContent();
         }
 
         [HttpDelete("{id}")]

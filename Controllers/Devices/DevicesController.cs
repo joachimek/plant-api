@@ -121,11 +121,10 @@ namespace plant_api.Controllers.Devices
                 }
                 else
                 {
-                    throw;
+                    return NoContent();
                 }
             }
 
-            return NoContent();
         }
 
         [HttpDelete("{id}")]

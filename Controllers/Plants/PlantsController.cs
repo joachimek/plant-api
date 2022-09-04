@@ -124,11 +124,9 @@ namespace plant_api.Controllers.Plants
                 }
                 else
                 {
-                    throw;
+                    return NoContent();
                 }
             }
-
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
