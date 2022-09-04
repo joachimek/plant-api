@@ -66,15 +66,20 @@ namespace plant_api.Controllers.Plants
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
-            if (_context.Plants == null)
+            if (_context.Plants == null || _context.Devices == null || _context.Species == null)
             {
-                return Problem("Entity set 'PlantApiContext.Plants'  is null.");
+                return Problem("Entity set 'PlantApiContext.Plants', 'PlantApiContext.Species' or 'PlantApiContext.Devices'  is null.");
             }
+
+            var device = await _context.Devices.FirstOrDefaultAsync(x => x.ID == request.DeviceID);
+            var species = await _context.Species.FirstOrDefaultAsync(x => x.ID == request.SpeciesID);
 
             var plant = new Models.Plants()
             {
                 SpeciesID = request.SpeciesID,
+                Species = species ?? null,
                 DeviceID = request.DeviceID,
+                Device = device ?? null,
                 GuideID = request.GuideID,
                 Name = request.Name,
             };
@@ -89,7 +94,7 @@ namespace plant_api.Controllers.Plants
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
-            if (_context.Plants == null)
+            if (_context.Plants == null || _context.Devices == null || _context.Species == null)
             {
                 return NotFound();
             }
@@ -105,9 +110,31 @@ namespace plant_api.Controllers.Plants
                 return NotFound();
             }
 
+
+            if(plant.DeviceID != null)
+            {
+                var device = await _context.Devices.FirstOrDefaultAsync(x => x.ID == plant.DeviceID);
+
+                if(device != null)
+                {
+                    plantDb.DeviceID = plant.DeviceID ?? plantDb.DeviceID;
+                    plantDb.Device = device ?? plantDb.Device;
+                    device.PlantID = id;
+                    device.Plant = plantDb;
+
+                    _context.Entry(device).State = EntityState.Modified;
+                }
+            }
+
+            if(plant.SpeciesID != null)
+            {
+                var species = await _context.Species.FirstOrDefaultAsync(x => x.ID == plant.SpeciesID);
+
+                plantDb.SpeciesID = plant.SpeciesID ?? plantDb.SpeciesID;
+                plantDb.Species = species ?? plantDb.Species;
+            }
+
             plantDb.Name = plant.Name ?? plantDb.Name;
-            plantDb.DeviceID = plant.DeviceID ?? plantDb.DeviceID;
-            plantDb.SpeciesID = plant.SpeciesID ?? plantDb.DeviceID;
 
             _context.Entry(plantDb).State = EntityState.Modified;
 

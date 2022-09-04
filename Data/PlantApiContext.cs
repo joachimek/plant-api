@@ -31,6 +31,18 @@ namespace plant_api.Data
                 .HasForeignKey<Plants>(x => x.DeviceID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Devices>()
+               .HasOne(x => x.User)
+               .WithMany(x => x.Devices);
+
+            modelBuilder.Entity<Guides>()
+               .HasOne(x => x.Species)
+               .WithMany(x => x.Guides);
+
+            modelBuilder.Entity<Guides>()
+               .HasOne(x => x.User)
+               .WithMany(x => x.Guides);
+
             modelBuilder.Entity<Guides>()
                 .HasMany(x => x.Reviews)
                 .WithOne(x => x.Guide)
@@ -44,10 +56,26 @@ namespace plant_api.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Plants>()
+               .HasOne(x => x.Species)
+               .WithMany(x => x.Plants);
+
+            modelBuilder.Entity<Plants>()
+               .HasOne(x => x.Guide)
+               .WithMany(x => x.Plants);
+
+            modelBuilder.Entity<Plants>()
+               .HasOne(x => x.Device)
+               .WithOne(x => x.Plant);
+
+            modelBuilder.Entity<Plants>()
                 .HasMany(x => x.PlantsHists)
                 .WithOne(x => x.Plant)
                 .HasForeignKey(x => x.PlantID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PlantsHist>()
+               .HasOne(x => x.Plant)
+               .WithMany(x => x.PlantsHists);
 
             modelBuilder.Entity<SpeciesDto>()
                 .HasMany(x => x.Guides)
