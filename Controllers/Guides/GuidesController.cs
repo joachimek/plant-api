@@ -87,7 +87,6 @@ namespace plant_api.Controllers.Guides
 
             var guide = new Models.Guides()
             {
-                ID = await GenerateId(),
                 SpeciesID = request.SpeciesID,
                 UserID = userId,
                 Info = request.Info,
@@ -145,7 +144,6 @@ namespace plant_api.Controllers.Guides
             return NoContent();
         }
 
-        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGuide(long id)
         {
@@ -169,7 +167,7 @@ namespace plant_api.Controllers.Guides
             return NoContent();
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpDelete("ForceDelete/{id}")]
         public async Task<IActionResult> ForceDeleteGuide(long id)
         {
@@ -194,20 +192,6 @@ namespace plant_api.Controllers.Guides
         private bool GuideExists(long id)
         {
             return (_context.Guides?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.Guides == null || !_context.Guides.Any())
-                    return 1;
-                return await _context.Guides.MaxAsync(s => s.ID) + 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
     }
 }

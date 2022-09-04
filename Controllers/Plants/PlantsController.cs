@@ -73,7 +73,6 @@ namespace plant_api.Controllers.Plants
 
             var plant = new Models.Plants()
             {
-                ID = await GenerateId(),
                 SpeciesID = request.SpeciesID,
                 DeviceID = request.DeviceID,
                 GuideID = request.GuideID,
@@ -132,7 +131,6 @@ namespace plant_api.Controllers.Plants
             return NoContent();
         }
 
-        //TODO  add authority: admin or owner
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlant(long id)
         {
@@ -156,7 +154,7 @@ namespace plant_api.Controllers.Plants
             return NoContent();
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpDelete("ForceDelete/{id}")]
         public async Task<IActionResult> ForceDeletePlant(long id)
         {
@@ -181,20 +179,6 @@ namespace plant_api.Controllers.Plants
         private bool PlantExists(long id)
         {
             return (_context.Plants?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.Plants == null || !_context.Plants.Any())
-                    return 1;
-                return await _context.Plants.MaxAsync(s => s.ID) + 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
     }
 }

@@ -57,7 +57,6 @@ namespace plant_api.Controllers.Species
 
             var species = new Models.SpeciesDto()
             {
-                ID = await GenerateId(),
                 Name = request.Name,
                 Info = request.Info,
                 IsPublic = request.IsPublic,
@@ -133,20 +132,6 @@ namespace plant_api.Controllers.Species
         private bool SpeciesExists(long id)
         {
             return (_context.Species?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.Species == null || !_context.Species.Any())
-                    return 1;
-                return await _context.Species.MaxAsync(s => s.ID) + 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
     }
 }

@@ -41,12 +41,7 @@ namespace plant_api.Controllers.Devices
 
             var devices = await _context.Devices.Where(d => d.UserID == userId).ToListAsync();
 
-            if (devices.Any())
-            {
-                return Ok(devices);
-            }
-
-            return NotFound();
+            return Ok(devices);
         }
 
         [HttpGet("{id}")]
@@ -81,7 +76,6 @@ namespace plant_api.Controllers.Devices
 
             var device = new Models.Devices()
             {
-                ID = await GenerateId(),
                 UserID = userId,
                 PlantID = request.PlantID,
                 Name = request.Name,
@@ -157,7 +151,7 @@ namespace plant_api.Controllers.Devices
             return NoContent();
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpDelete("ForceDelete/{id}")]
         public async Task<IActionResult> ForceDeleteDevice(long id)
         {
@@ -181,20 +175,6 @@ namespace plant_api.Controllers.Devices
         private bool DeviceExists(long id)
         {
             return (_context.Devices?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.Devices == null || !_context.Devices.Any() )
-                    return 1;
-                return await _context.Devices.MaxAsync(s => s.ID) + 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
     }
 }

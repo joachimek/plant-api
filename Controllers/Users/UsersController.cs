@@ -20,7 +20,7 @@ namespace plant_api.Controllers.Users
             _context = context;
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Users>>> GetUsers()
         {
@@ -32,13 +32,13 @@ namespace plant_api.Controllers.Users
         }
 
         [HttpGet("{username}")]
-        public async Task<ActionResult<Models.Users>> GetUser(long username)
+        public async Task<ActionResult<Models.Users>> GetUser(string username)
         {
             if (_context.Users == null)
             {
                 return NotFound();
             }
-            var user = await _context.Users.FindAsync(username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
             if (user == null)
             {
@@ -71,7 +71,7 @@ namespace plant_api.Controllers.Users
             return CreatedAtAction("GetUser", new { username = request.Username }, user);
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UpdateUserRequest request)
         {
@@ -104,20 +104,6 @@ namespace plant_api.Controllers.Users
                 return Ok(user);
             }
             catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.Users == null || !_context.Users.Any())
-                    return 1;
-                return await _context.Users.MaxAsync(s => s.Id) + 1;
-            }
-            catch (Exception)
             {
                 throw;
             }

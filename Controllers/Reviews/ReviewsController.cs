@@ -78,7 +78,6 @@ namespace plant_api.Controllers.Reviews
 
             var review = new Models.Reviews()
             {
-                ID = await GenerateId(),
                 UserID = userId,
                 GuideID = request.GuideID,
             };
@@ -111,7 +110,7 @@ namespace plant_api.Controllers.Reviews
             return NoContent();
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpDelete("ForceDelete/{id}")]
         public async Task<IActionResult> ForceDeleteReview(long id)
         {
@@ -129,25 +128,6 @@ namespace plant_api.Controllers.Reviews
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ReviewExists(long id)
-        {
-            return (_context.Reviews?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.Reviews == null || !_context.Reviews.Any())
-                    return 1;
-                return await _context.Reviews.MaxAsync(s => s.ID) + 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
     }
 }

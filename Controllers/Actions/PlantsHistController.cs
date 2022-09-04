@@ -154,7 +154,6 @@ namespace plant_api.Controllers.ApiActions
             var waterPlant = minHumidity > (Double.Parse(soilHumidity));
 
             var create = new PlantsHist() { 
-                ID = ID,
                 PlantID = request?.PlantID ?? -1,
                 Sunlight = request?.Sunlight ?? false,
                 Temperature = request?.Temperature ?? "NaN",
@@ -171,7 +170,7 @@ namespace plant_api.Controllers.ApiActions
             return CreatedAtAction("GetApiAction", new { id = ID }, request);
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteApiAction(long id)
         {
@@ -189,25 +188,6 @@ namespace plant_api.Controllers.ApiActions
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ApiActionExists(long id)
-        {
-            return (_context.ApiActions?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
-        private async Task<long> GenerateId()
-        {
-            try
-            {
-                if (_context.ApiActions == null || !_context.ApiActions.Any())
-                    return 1;
-                return await _context.ApiActions.MaxAsync(s => s.ID) + 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
     }
 }
