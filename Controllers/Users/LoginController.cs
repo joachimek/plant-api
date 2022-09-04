@@ -27,14 +27,14 @@ namespace plant_api.Controllers.Users
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<string>> LoginUser(UserLogin userLogin)
+        public async Task<ActionResult<UserLoginResponse>> LoginUser(UserLogin userLogin)
         {
             var user = await Authenticate(userLogin);
 
             if(user != null)
             {
-                var token = Generate(user);
-                return Ok(token);
+                var response = new UserLoginResponse() { Token = Generate(user) };
+                return Ok(response);
             }
 
             return Unauthorized();

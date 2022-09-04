@@ -20,6 +20,7 @@ namespace plant_api.Controllers.Users
             _context = context;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Users>>> GetUsers()
         {
@@ -58,7 +59,6 @@ namespace plant_api.Controllers.Users
 
             var user = new Models.Users() 
             { 
-                Id = await GenerateId(),
                 Password = Cryptography.MD5Hash(request.Password), 
                 Username = request.Username, 
                 EmailAddress = request.EmailAddress, 
