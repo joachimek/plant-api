@@ -1,6 +1,30 @@
-﻿namespace plant_api.Data.Builders
+﻿using Microsoft.EntityFrameworkCore;
+using plant_api.Models;
+
+namespace plant_api.Data.Builders
 {
-    public class PlantsBuilder
+    public static class PlantsBuilder
     {
+        public static void buildPlantsModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Plants>()
+               .HasOne(x => x.Species)
+               .WithMany(x => x.Plants);
+
+            modelBuilder.Entity<Plants>()
+               .HasOne(x => x.Guide)
+               .WithMany(x => x.Plants);
+
+            modelBuilder.Entity<Plants>()
+               .HasOne(x => x.Device)
+               .WithOne(x => x.Plant)
+               .HasForeignKey<Devices>(x => x.PlantID);
+
+            modelBuilder.Entity<Plants>()
+                .HasMany(x => x.PlantsHists)
+                .WithOne(x => x.Plant)
+                .HasForeignKey(x => x.PlantID)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

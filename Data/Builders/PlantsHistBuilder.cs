@@ -1,6 +1,15 @@
-﻿namespace plant_api.Data.Builders
+﻿using Microsoft.EntityFrameworkCore;
+using plant_api.Models;
+
+namespace plant_api.Data.Builders
 {
-    public class PlantsHistBuilder
+    public static class PlantsHistBuilder
     {
+        public static void buildPlantsHistModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PlantsHist>()
+               .HasOne(x => x.Plant)
+               .WithMany(x => x.PlantsHists);
+        }
     }
 }

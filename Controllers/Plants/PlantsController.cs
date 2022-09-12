@@ -27,13 +27,16 @@ namespace plant_api.Controllers.Plants
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
-            if (_context.Plants == null)
+            if (_context.Plants == null || _context.Devices == null)
             {
                  return NotFound();
             }
-            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id && p.Device != null && p.Device.UserID == userId);
 
-            if (plant == null)
+            var device = await _context.Devices.FirstOrDefaultAsync(p => p.PlantID == id && p.UserID == userId);
+
+            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == id);
+
+            if (plant == null || device == null)
             {
                 return NotFound();
             }
@@ -46,14 +49,16 @@ namespace plant_api.Controllers.Plants
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
-            if (_context.Plants == null)
+            if (_context.Plants == null || _context.Devices == null)
             {
                 return NotFound();
             }
 
-            var plant = await _context.Plants.Include(x => x.Device).FirstOrDefaultAsync(p => p.DeviceID == deviceId && p.Device != null && p.Device.UserID == userId);
+            var device = await _context.Devices.FirstOrDefaultAsync(p => p.ID == deviceId && p.UserID == userId);
 
-            if (plant == null)
+            var plant = await _context.Plants.FirstOrDefaultAsync(p => p.DeviceID == deviceId);
+
+            if (plant == null || device == null)
             {
                 return NotFound();
             }
@@ -72,6 +77,7 @@ namespace plant_api.Controllers.Plants
             }
 
             var device = await _context.Devices.FirstOrDefaultAsync(x => x.ID == request.DeviceID);
+
             var species = await _context.Species.FirstOrDefaultAsync(x => x.ID == request.SpeciesID);
 
             var plant = new Models.Plants()
@@ -84,11 +90,15 @@ namespace plant_api.Controllers.Plants
                 Name = request.Name,
             };
             _context.Plants.Add(plant);
+
+            _context.Entry(device).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPlant", new { id = plant.ID }, plant);
         }
 
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePlant(long id, UpdatePlantRequest plant)
         {
@@ -100,9 +110,9 @@ namespace plant_api.Controllers.Plants
             }
 
             var plantDb = await _context.Plants.FirstOrDefaultAsync(p =>
-                p.ID == id &&
-                p.Device != null &&
-                p.Device.UserID == userId
+                p.ID == id 
+                //&& p.Device != null 
+                //&& p.Device.UserID == userId
             );
 
             if (plantDb == null)

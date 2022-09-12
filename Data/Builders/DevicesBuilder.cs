@@ -3,12 +3,10 @@ using plant_api.Models;
 
 namespace plant_api.Data.Builders
 {
-    public class DevicesBuilder
+    public static class DevicesBuilder
     {
-        void buildDevicesModel(ModelBuilder modelBuilder)
+        public static void buildDevicesModel(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Devices>().ToTable("Devices");
-
             modelBuilder.Entity<Devices>()
                 .HasOne(x => x.Plant)
                 .WithOne(x => x.Device)
