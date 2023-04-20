@@ -46,6 +46,23 @@ namespace plant_api.Controllers.Species
             return species;
         }
 
+        [HttpPost("GetMany")]
+        public async Task<ActionResult<IEnumerable<Models.SpeciesDto>>> GetMany(Models.Common.GetManyRequest request)
+        {
+            if (_context.Species == null)
+            {
+                return NotFound();
+            }
+            var species = await _context.Species.Where(s => request.IDs.Contains(s.ID)).ToListAsync();
+
+            if (species == null)
+            {
+                return NotFound();
+            }
+
+            return species;
+        }
+
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(InsertSpeciesRequest request)

@@ -75,6 +75,23 @@ namespace plant_api.Controllers.Guides
             return Ok(guide);
         }
 
+        [HttpPost("GetMany")]
+        public async Task<ActionResult<IEnumerable<Models.Guides>>> GetMany(Models.Common.GetManyRequest request)
+        {
+            if (_context.Guides == null)
+            {
+                return NotFound();
+            }
+            var guide = await _context.Guides.Where(s => request.IDs.Contains(s.ID)).ToListAsync();
+
+            if (guide == null)
+            {
+                return NotFound();
+            }
+
+            return guide;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Models.Guides>> InsertGuide(InsertGuideRequest request)
         {

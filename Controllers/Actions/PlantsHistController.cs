@@ -133,14 +133,16 @@ namespace plant_api.Controllers.ApiActions
                 return Problem("Entity set 'PlantApiContext.ApiActions'  is null.");
             }
             
-            if (_context.Guides == null || _context.Plants == null)
+            if (_context.Guides == null || _context.Plants == null || _context.Devices == null)
             {
                 return BadRequest();
             }
 
+            var device = await _context.Devices.FirstOrDefaultAsync(p => p.PlantID == request.PlantID);
+
             var plant = await _context.Plants.FirstOrDefaultAsync(p => p.ID == request.PlantID);
 
-            if (plant == null || plant.Device == null || userId != plant.Device.UserID)
+            if (plant == null || device == null || userId != device.UserID)
             {
                 return BadRequest();
             }
@@ -165,7 +167,7 @@ namespace plant_api.Controllers.ApiActions
             _context.ApiActions.Add(create);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetApiAction", create, request);
+            return CreatedAtAction("GetApiAction", new { id = create.ID }, create);
         }
 
         [Authorize(Roles = "admin")]
