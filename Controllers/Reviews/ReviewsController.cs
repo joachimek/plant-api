@@ -31,6 +31,26 @@ namespace plant_api.Controllers.Reviews
             return await _context.Reviews.ToListAsync();
         }
 
+        [HttpGet("GetMany/{ids}")]
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyGuides(string ids)
+        {
+            var idsParsed = ids.Split(',');
+            long[] idsLong = idsParsed.Select(long.Parse).ToArray();
+
+            if (_context.Reviews == null)
+            {
+                return NotFound();
+            }
+
+            if (idsParsed != null && idsParsed.Length > 0)
+            {
+                var reviews = await _context.Reviews.Where(d => idsLong.Contains(d.ID)).ToListAsync();
+                return Ok(reviews);
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("GetByGuideId/{guideId}")]
         public async Task<ActionResult<IEnumerable<Models.Reviews>>> GetReviewsByGuide(long guideId)
         {

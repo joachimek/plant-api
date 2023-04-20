@@ -46,6 +46,26 @@ namespace plant_api.Controllers.ApiActions
             return NotFound();
         }
 
+        [HttpGet("GetMany/{ids}")]
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyPlantHists(string ids)
+        {
+            var idsParsed = ids.Split(',');
+            long[] idsLong = idsParsed.Select(long.Parse).ToArray();
+
+            if (_context.ApiActions == null)
+            {
+                return NotFound();
+            }
+
+            if (idsParsed != null && idsParsed.Length > 0)
+            {
+                var plantsHists = await _context.ApiActions.Where(d => idsLong.Contains(d.ID)).ToListAsync();
+                return Ok(plantsHists);
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<PlantsHist>> GetApiAction(long id)
         {

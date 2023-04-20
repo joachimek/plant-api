@@ -39,6 +39,26 @@ namespace plant_api.Controllers.Guides
             return NotFound();
         }
 
+        [HttpGet("GetMany/{ids}")]
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyGuides(string ids)
+        {
+            var idsParsed = ids.Split(',');
+            long[] idsLong = idsParsed.Select(long.Parse).ToArray();
+
+            if (_context.Guides == null)
+            {
+                return NotFound();
+            }
+
+            if (idsParsed != null && idsParsed.Length > 0)
+            {
+                var guides = await _context.Guides.Where(d => idsLong.Contains(d.ID)).ToListAsync();
+                return Ok(guides);
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("GetBySpeciesId/{speciesId}")]
         public async Task<ActionResult<IEnumerable<Models.Guides>>> GetGuidesBySpecies(long speciesId)
         {

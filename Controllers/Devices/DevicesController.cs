@@ -44,6 +44,28 @@ namespace plant_api.Controllers.Devices
             return Ok(devices);
         }
 
+        [HttpGet("GetMany/{ids}")]
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyDevice(string ids)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            var idsParsed = ids.Split(',');
+            long[] idsLong = idsParsed.Select(long.Parse).ToArray();
+
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            if (idsParsed != null && idsParsed.Length > 0)
+            {
+                var devices = await _context.Devices.Where(d => d.UserID == userId && idsLong.Contains(d.ID)).ToListAsync();
+                return Ok(devices);
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Devices>> GetDevice(long id)
         {
