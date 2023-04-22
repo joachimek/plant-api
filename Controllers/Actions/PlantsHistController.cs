@@ -32,11 +32,7 @@ namespace plant_api.Controllers.ApiActions
                 return NotFound();
             }
 
-            var plantsHists = await _context.ApiActions.Where(ph =>
-                ph.Plant != null &&
-                ph.Plant.Device != null &&
-                ph.Plant.Device.UserID == userId
-                ).ToListAsync();
+            var plantsHists = await _context.ApiActions.Where(ph => ph.PlantID != -1).ToListAsync();
 
             if (plantsHists.Any())
             {
@@ -47,7 +43,7 @@ namespace plant_api.Controllers.ApiActions
         }
 
         [HttpGet("GetMany/{ids}")]
-        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyPlantHists(string ids)
+        public async Task<ActionResult<IEnumerable<PlantsHist>>> GetManyPlantHists(string ids)
         {
             var idsParsed = ids.Split(',');
             long[] idsLong = idsParsed.Select(long.Parse).ToArray();
@@ -108,6 +104,26 @@ namespace plant_api.Controllers.ApiActions
                 ph.Plant.Device.UserID == userId).ToListAsync();
 
             if (plantHist.Any())
+            {
+                return Ok(plantHist);
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("GetLastByPlantId/{id}")]
+        public async Task<ActionResult<PlantsHist>> GetLastApiActionByPlantId(long plantId)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.ApiActions == null)
+            {
+                return NotFound();
+            }
+
+            var plantHist = await _context.ApiActions.Where(ph => ph.PlantID == plantId).OrderByDescending(p => p.Date).FirstOrDefaultAsync();
+
+            if (plantHist != null)
             {
                 return Ok(plantHist);
             }

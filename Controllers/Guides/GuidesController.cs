@@ -40,7 +40,7 @@ namespace plant_api.Controllers.Guides
         }
 
         [HttpGet("GetMany/{ids}")]
-        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyGuides(string ids)
+        public async Task<ActionResult<IEnumerable<Models.Guides>>> GetManyGuides(string ids)
         {
             var idsParsed = ids.Split(',');
             long[] idsLong = idsParsed.Select(long.Parse).ToArray();

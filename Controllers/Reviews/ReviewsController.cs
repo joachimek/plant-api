@@ -32,7 +32,7 @@ namespace plant_api.Controllers.Reviews
         }
 
         [HttpGet("GetMany/{ids}")]
-        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyGuides(string ids)
+        public async Task<ActionResult<IEnumerable<Models.Reviews>>> GetManyReviews(string ids)
         {
             var idsParsed = ids.Split(',');
             long[] idsLong = idsParsed.Select(long.Parse).ToArray();

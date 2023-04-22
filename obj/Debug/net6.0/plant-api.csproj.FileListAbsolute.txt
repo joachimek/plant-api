@@ -294,3 +294,8 @@ C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets\msbuild.plant-api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets\msbuild.build.plant-api.props
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.plant-api.props
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.plant-api.props
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets.pack.json

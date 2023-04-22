@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
 using plant_api.Models.Species;
+using System.Data.Entity;
 
 namespace plant_api.Controllers.Species
 {
@@ -26,11 +27,11 @@ namespace plant_api.Controllers.Species
             {
                 return NotFound();
             }
-            return await _context.Species.ToListAsync();
+            return _context.Species.Where(s => true).ToList();
         }
 
         [HttpGet("GetMany/{ids}")]
-        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyGuides(string ids)
+        public async Task<ActionResult<IEnumerable<Models.SpeciesDto>>> GetManySpecies(string ids)
         {
             var idsParsed = ids.Split(',');
             long[] idsLong = idsParsed.Select(long.Parse).ToArray();
@@ -42,7 +43,7 @@ namespace plant_api.Controllers.Species
 
             if (idsParsed != null && idsParsed.Length > 0)
             {
-                var species = await _context.Species.Where(d => idsLong.Contains(d.ID)).ToListAsync();
+                var species = _context.Species.Where(d => idsLong.Contains(d.ID)).ToList();
                 return Ok(species);
             }
 
@@ -82,7 +83,20 @@ namespace plant_api.Controllers.Species
 
             return species;
         }
+        
+        [HttpGet("GetByName/{name}")]
+        public async Task<ActionResult<IEnumerable<Models.SpeciesDto>>> GetSpeciesByName(string name)
+        {
+            if (_context.Species == null)
+            {
+                return NotFound();
+            }
 
+            var species = _context.Species.Where(s => s.Name.Contains(name)).ToList();
+
+            return species;
+        }
+        
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<Models.SpeciesDto>> InsertSpecies(InsertSpeciesRequest request)
@@ -124,7 +138,7 @@ namespace plant_api.Controllers.Species
             speciesDb.Info = species.Info ?? speciesDb.Info;
             speciesDb.IsPublic = species.IsPublic ?? speciesDb.IsPublic;
 
-            _context.Entry(speciesDb).State = EntityState.Modified;
+            _context.Entry(speciesDb).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
 
             try
             {

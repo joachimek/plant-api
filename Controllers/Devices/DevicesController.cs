@@ -45,7 +45,7 @@ namespace plant_api.Controllers.Devices
         }
 
         [HttpGet("GetMany/{ids}")]
-        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyDevice(string ids)
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyDevices(string ids)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 

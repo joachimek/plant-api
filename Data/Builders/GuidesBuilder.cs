@@ -24,7 +24,6 @@ namespace plant_api.Data.Builders
             modelBuilder.Entity<Guides>()
                 .HasMany(x => x.Plants)
                 .WithOne(x => x.Guide)
-                .HasForeignKey(x => x.GuideID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

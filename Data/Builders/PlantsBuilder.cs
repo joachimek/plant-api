@@ -13,12 +13,8 @@ namespace plant_api.Data.Builders
 
             modelBuilder.Entity<Plants>()
                .HasOne(x => x.Guide)
-               .WithMany(x => x.Plants);
-
-            modelBuilder.Entity<Plants>()
-               .HasOne(x => x.Device)
-               .WithOne(x => x.Plant)
-               .HasForeignKey<Devices>(x => x.PlantID);
+               .WithMany(x => x.Plants)
+               .HasForeignKey(x => x.GuideID);
 
             modelBuilder.Entity<Plants>()
                 .HasMany(x => x.PlantsHists)

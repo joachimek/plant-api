@@ -45,7 +45,7 @@ namespace plant_api.Controllers.Plants
         }
 
         [HttpGet("GetMany/{ids}")]
-        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyPlants(string ids)
+        public async Task<ActionResult<IEnumerable<Models.Plants>>> GetManyPlants(string ids)
         {
             var idsParsed = ids.Split(',');
             long[] idsLong = idsParsed.Select(long.Parse).ToArray();
@@ -106,7 +106,7 @@ namespace plant_api.Controllers.Plants
                 Species = species ?? null,
                 DeviceID = request.DeviceID,
                 Device = device ?? null,
-                GuideID = request.GuideID,
+                GuideID = -1,
                 Name = request.Name,
             };
             _context.Plants.Add(plant);

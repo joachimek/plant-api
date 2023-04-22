@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
 using plant_api.Helpers;
+using plant_api.Models;
 using plant_api.Models.User;
 
 namespace plant_api.Controllers.Users
@@ -46,6 +47,26 @@ namespace plant_api.Controllers.Users
             }
 
             return user;
+        }
+
+        [HttpGet("GetMany/{ids}")]
+        public async Task<ActionResult<IEnumerable<Models.Users>>> GetManyUsers(string ids)
+        {
+            var idsParsed = ids.Split(',');
+            long[] idsLong = idsParsed.Select(long.Parse).ToArray();
+
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
+            if (idsParsed != null && idsParsed.Length > 0)
+            {
+                var users = await _context.Users.Where(d => idsLong.Contains(d.Id)).ToListAsync();
+                return Ok(users);
+            }
+
+            return NotFound();
         }
 
         [AllowAnonymous]
