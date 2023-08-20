@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using plant_api.Data;
 using plant_api.Helpers;
+using plant_api.Models;
 using plant_api.Models.Guide;
 using System.Security.Claims;
 
@@ -95,6 +96,30 @@ namespace plant_api.Controllers.Guides
             return Ok(guide);
         }
 
+        [HttpGet("GetByPlantId/{id}")]
+        public async Task<ActionResult<Models.Guides>> GetGuideByPlantId(long plantId)
+        {
+            if (_context.Plants == null || _context.Guides == null)
+            {
+                return NotFound();
+            }
+            
+            var plant = await _context.Plants.FindAsync(plantId);
+
+            if (plant == null || plant.GuideID == -1)
+            {
+                return NotFound();
+            }
+
+            var guide = await _context.Guides.FindAsync(plant.GuideID);
+
+            if (guide != null)
+            {
+                return Ok(guide);
+            }
+
+            return NotFound();
+        }
         [HttpPost("GetMany")]
         public async Task<ActionResult<IEnumerable<Models.Guides>>> GetMany(Models.Common.GetManyRequest request)
         {

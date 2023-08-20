@@ -87,8 +87,8 @@ namespace plant_api.Controllers.ApiActions
             return Ok(plantHist);
         }
 
-        [HttpGet("GetByPlantId/{id}")]
-        public async Task<ActionResult<IEnumerable<PlantsHist>>> GetApiActionByPlantId(long plantId)
+        [HttpGet("GetByPlantId/{id}/{date}")]
+        public async Task<ActionResult<IEnumerable<PlantsHist>>> GetApiActionByPlantId(long plantId, string date)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 

@@ -6,7 +6,6 @@ namespace plant_api.Helpers
     {
         public static long GetUserId(ClaimsIdentity identity)
         {
-            var aaa = identity.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
             if (long.TryParse(identity.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value, out var userId))
             {
                 return userId;

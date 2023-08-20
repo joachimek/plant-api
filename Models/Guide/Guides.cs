@@ -8,8 +8,9 @@ namespace plant_api.Models
         public long SpeciesID { get; set; } = -1;
         public long UserID { get; set; } = -1;
         public string? Info { get; set; }
-        public double MaxHumidity { get; set; } = 1.00;
+        public double MaxHumidity { get; set; } = 100.00;
         public double MinHumidity { get; set; } = 0.00;
+        public double AirHumidity { get; set; } = 
 
         [JsonIgnore]
         public virtual SpeciesDto? Species { get; set; }
