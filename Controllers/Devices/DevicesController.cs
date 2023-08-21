@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using plant_api.Helpers;
 using plant_api.Models.Device;
+using System.Linq.Dynamic.Core;
 
 namespace plant_api.Controllers.Devices
 {
@@ -42,6 +43,53 @@ namespace plant_api.Controllers.Devices
             var devices = await _context.Devices.Where(d => d.UserID == userId).ToListAsync();
 
             return Ok(devices);
+        }
+
+        [HttpGet("GetList/{props}")]
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetDevicesList(string props)
+        {
+            if (props == null)
+            {
+                return BadRequest();
+            }
+
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            string[] propArray = props.Split('+');
+            string sortField = propArray[0];
+            string sortOrder = propArray[1];
+            string page = propArray[2];
+            string perPage = propArray[3];
+
+            if (sortField == null || sortOrder == null || page == null || perPage == null)
+            {
+                return BadRequest();
+            }
+
+            var pageInt = Int32.Parse(page);
+            var perPageInt = Int32.Parse(perPage);
+
+            if (sortOrder == "ASC")
+            {
+                var species = _context.Devices
+                    .OrderBy("s=>s." + sortField)
+                    .AsEnumerable()
+                    .Where((s, i) => i >= (pageInt - 1) * perPageInt && i < pageInt * perPageInt)
+                    .ToList();
+                return Ok(species);
+            }
+            else
+            {
+                var species = _context.Devices
+                    .OrderBy("s=>s." + sortField + " DESC")
+                    .AsEnumerable()
+                    .Where((s, i) => i >= (pageInt - 1) * perPageInt && i < pageInt * perPageInt)
+                    .ToList();
+                return Ok(species);
+            }
         }
 
         [HttpGet("GetMany/{ids}")]

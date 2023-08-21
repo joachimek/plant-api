@@ -299,3 +299,4 @@ C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.plant-api.props
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.plant-api.props
 C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\obj\Debug\net6.0\staticwebassets.pack.json
+C:\Users\kaczy\Desktop\studia\SEM 6\projekt inżynierski\plant-api\bin\Debug\net6.0\System.Linq.Dynamic.Core.dll
