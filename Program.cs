@@ -67,6 +67,8 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<PlantApiContext>();
 
     //CAUTION:  USE RESPONSIBLY
+    //THE COMMENTED CODE LINE BELOW IS GONNA DELETE THE *ENTIRE* DATABASE
+    //THIS WAS THE LAST WARNING
     //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 }

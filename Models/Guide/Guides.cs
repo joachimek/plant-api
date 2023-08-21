@@ -8,9 +8,12 @@ namespace plant_api.Models
         public long SpeciesID { get; set; } = -1;
         public long UserID { get; set; } = -1;
         public string? Info { get; set; }
+        //values of humidity levels and humidity in percentages
         public double MaxHumidity { get; set; } = 100.00;
         public double MinHumidity { get; set; } = 0.00;
-        public double AirHumidity { get; set; } = 
+        public double AirHumidity { get; set; } = 0.00;
+        public double SunlightTime { get; set; } = 0.00;
+        public bool IsPublic { get; set; } = false;
 
         [JsonIgnore]
         public virtual SpeciesDto? Species { get; set; }
