@@ -183,11 +183,23 @@ namespace plant_api.Controllers.ApiActions
                 return BadRequest();
             }
 
-            var guide = await _context.Guides.FirstOrDefaultAsync(p => p.ID == plant.GuideID);
-            var minHumidity = guide?.MinHumidity ?? 0;
-            var soilHumidity = request?.SoilHumidity ?? "1";
+            var guide = await _context.Guides.FirstOrDefaultAsync(g => g.ID == plant.GuideID);
+            
+            double minHumidity = guide?.MinHumidity ?? 0.0;
+            string soilHumidity = request?.SoilHumidity ?? "100";
+            double guideAirHumidity = guide?.AirHumidity ?? 0.0;
+            string airHumidity = request?.AirHumidity ?? "100";
 
-            var waterPlant = minHumidity > (Double.Parse(soilHumidity));
+            bool waterPlant = minHumidity > (Double.Parse(soilHumidity));
+            bool fanOn = guideAirHumidity * 1.15 < (Double.Parse(airHumidity));
+
+            DateTime now = DateTime.Now;
+            DateTime yesterday = now.AddHours(-24);
+            var lastDayActions = await _context.ApiActions.Where(a => a.PlantID == plant.ID && a.Date <= now && a.Date >= yesterday).ToListAsync();
+            var lastDaySunActions = lastDayActions.Where(a => a.Sunlight).ToList();
+            double sunlightPercentage = (guide?.SunlightTime / 100) ?? 0.0;
+
+            bool lampOn = lastDaySunActions.Count() < (lastDayActions.Count() * sunlightPercentage);
 
             var create = new PlantsHist() { 
                 PlantID = request?.PlantID ?? -1,
@@ -196,8 +208,8 @@ namespace plant_api.Controllers.ApiActions
                 AirHumidity = request?.AirHumidity ?? "NaN",
                 SoilHumidity = request?.SoilHumidity ?? "NaN",
                 WateredPlant = waterPlant,
-                LampOn = false,
-                FanOn = false,
+                LampOn = lampOn,
+                FanOn = fanOn,
                 Date = DateTime.Now
             };
             _context.ApiActions.Add(create);
