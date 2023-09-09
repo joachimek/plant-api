@@ -7,6 +7,8 @@ using plant_api.Helpers;
 using plant_api.Models;
 using plant_api.Models.Actions;
 using System.Security.Claims;
+using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace plant_api.Controllers.ApiActions
 {
@@ -33,6 +35,47 @@ namespace plant_api.Controllers.ApiActions
             }
 
             var plantsHists = await _context.ApiActions.Where(ph => ph.PlantID != -1).ToListAsync();
+
+            if (plantsHists.Any())
+            {
+                return Ok(plantsHists);
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("GetByDate/{plant}/{props}")]
+        public async Task<ActionResult<IEnumerable<PlantsHist>>> GetApiActionsByDate(long plant, string props)
+        {
+            var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
+
+            if (_context.ApiActions == null)
+            {
+                return NotFound();
+            }
+
+            if (props == null)
+            {
+                return BadRequest();
+            }
+
+            string[] propArray = props.Split('+');
+            string dateStartString = propArray[0];
+            string dateEndString = propArray[1];
+
+            if (dateStartString == null || dateEndString == null)
+            {
+                return BadRequest();
+            }
+
+            DateTime dateStart = DateTime.Parse(dateStartString);
+            DateTime dateEnd = DateTime.Parse(dateEndString);
+
+            var plantsHists = _context.ApiActions
+                .OrderBy("s=>s.Date")
+                .AsEnumerable()
+                .Where(ph => ph.PlantID == plant && ph.Date > dateStart && ph.Date < dateEnd)
+                .ToList();
 
             if (plantsHists.Any())
             {
@@ -112,7 +155,7 @@ namespace plant_api.Controllers.ApiActions
         }
 
         [HttpGet("GetLastByPlantId/{id}")]
-        public async Task<ActionResult<PlantsHist>> GetLastApiActionByPlantId(long plantId)
+        public async Task<ActionResult<PlantsHist>> GetLastApiActionByPlantId(long id)
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
@@ -121,7 +164,7 @@ namespace plant_api.Controllers.ApiActions
                 return NotFound();
             }
 
-            var plantHist = await _context.ApiActions.Where(ph => ph.PlantID == plantId).OrderByDescending(p => p.Date).FirstOrDefaultAsync();
+            var plantHist = await _context.ApiActions.Where(ph => ph.PlantID == id).OrderByDescending(p => p.Date).FirstOrDefaultAsync();
 
             if (plantHist != null)
             {

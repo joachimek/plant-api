@@ -103,14 +103,25 @@ namespace plant_api.Controllers.Species
                 return BadRequest();
             }
 
+            var pageInt = Int32.Parse(page);
+            var perPageInt = Int32.Parse(perPage);
+
             if (sortOrder == "ASC")
             {
-                var species = _context.Species.Where(s => s.IsPublic == true && s.Name.Contains(name)).OrderBy(sortField).ToList();
+                var species = _context.Species
+                    .OrderBy("s=>s." + sortField)
+                    .AsEnumerable()
+                    .Where((s, i) => s.IsPublic == true && i >= (pageInt - 1) * perPageInt && i < pageInt * perPageInt && s.Name.Contains(name))
+                    .ToList();
                 return Ok(species);
             }
             else
             {
-                var species = _context.Species.Where(s => s.IsPublic == true && s.Name.Contains(name)).OrderBy(sortField + " descending").ToList();
+                var species = _context.Species
+                    .OrderBy("s=>s." + sortField + " DESC")
+                    .AsEnumerable()
+                    .Where((s, i) => s.IsPublic == true && i >= (pageInt - 1) * perPageInt && i < pageInt * perPageInt && s.Name.Contains(name))
+                    .ToList();
                 return Ok(species);
             }
         }

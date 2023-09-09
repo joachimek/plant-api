@@ -145,14 +145,14 @@ namespace plant_api.Controllers.Guides
         }
 
         [HttpGet("GetByPlantId/{id}")]
-        public async Task<ActionResult<Models.Guides>> GetGuideByPlantId(long plantId)
+        public async Task<ActionResult<Models.Guides>> GetGuideByPlantId(long id)
         {
             if (_context.Plants == null || _context.Guides == null)
             {
                 return NotFound();
             }
             
-            var plant = await _context.Plants.FindAsync(plantId);
+            var plant = await _context.Plants.FindAsync(id);
 
             if (plant == null || plant.GuideID == -1)
             {
@@ -200,9 +200,13 @@ namespace plant_api.Controllers.Guides
                 SpeciesID = request.SpeciesID,
                 UserID = userId,
                 Info = request.Info,
-                MaxHumidity = request.MaxHumidity ?? 1.0,
+                MaxHumidity = request.MaxHumidity ?? 100.0,
                 MinHumidity = request.MinHumidity ?? 0.0,
+                AirHumidity = request.AirHumidity ?? 0.0,
+                SunlightTime = request.SunlightTime ?? 0.0,
+                IsPublic = request.IsPublic ?? false,
             };
+
             _context.Guides.Add(guide);
             await _context.SaveChangesAsync();
 
@@ -226,11 +230,12 @@ namespace plant_api.Controllers.Guides
                 return NotFound();
             }
 
-            guideDb.SpeciesID = guide.SpeciesID ?? guideDb.SpeciesID;
-            guideDb.UserID = guide.UserID ?? guideDb.UserID;
             guideDb.Info = guide.Info ?? guideDb.Info;
             guideDb.MaxHumidity = guide.MaxHumidity ?? guideDb.MaxHumidity;
             guideDb.MinHumidity = guide.MinHumidity ?? guideDb.MinHumidity;
+            guideDb.AirHumidity = guide.AirHumidity ?? guideDb.AirHumidity;
+            guideDb.SunlightTime = guide.SunlightTime ?? guideDb.SunlightTime;
+            guideDb.IsPublic = guide.IsPublic ?? guideDb.IsPublic;
 
             _context.Entry(guideDb).State = EntityState.Modified;
 

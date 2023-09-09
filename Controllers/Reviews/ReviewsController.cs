@@ -29,7 +29,8 @@ namespace plant_api.Controllers.Reviews
           {
               return NotFound();
           }
-            return await _context.Reviews.ToListAsync();
+           
+          return await _context.Reviews.ToListAsync();
         }
 
         [HttpGet("GetList/{props}")]

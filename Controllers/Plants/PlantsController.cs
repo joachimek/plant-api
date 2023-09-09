@@ -91,14 +91,16 @@ namespace plant_api.Controllers.Plants
         {
             var userId = Identity.GetUserId(identity: HttpContext?.User?.Identity as ClaimsIdentity ?? new ClaimsIdentity());
 
-            if (_context.Plants == null || _context.Devices == null || _context.Species == null)
+            if (_context.Plants == null || _context.Devices == null || _context.Species == null || _context.Guides == null)
             {
-                return Problem("Entity set 'PlantApiContext.Plants', 'PlantApiContext.Species' or 'PlantApiContext.Devices'  is null.");
+                return Problem("Entity set 'PlantApiContext.Plants', 'PlantApiContext.Species', 'PlantApiContext.Devices' or 'PlantApiContext.Guides'  is null.");
             }
 
             var device = await _context.Devices.FirstOrDefaultAsync(x => x.ID == request.DeviceID);
 
             var species = await _context.Species.FirstOrDefaultAsync(x => x.ID == request.SpeciesID);
+
+            var guide = await _context.Guides.FirstOrDefaultAsync(x => x.ID == request.GuideID);
 
             var plant = new Models.Plants()
             {
@@ -106,11 +108,16 @@ namespace plant_api.Controllers.Plants
                 Species = species ?? null,
                 DeviceID = request.DeviceID,
                 Device = device ?? null,
-                GuideID = -1,
+                GuideID = request.GuideID,
+                Guide = guide ?? null,
                 Name = request.Name,
             };
+
             _context.Plants.Add(plant);
 
+            await _context.SaveChangesAsync();
+
+            device.PlantID = plant.ID;
             _context.Entry(device).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();

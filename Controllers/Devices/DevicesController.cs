@@ -92,6 +92,53 @@ namespace plant_api.Controllers.Devices
             }
         }
 
+        [HttpGet("GetByName/{name}/{props}")]
+        public async Task<ActionResult<IEnumerable<Models.Devices>>> GetDevicesByName(string name, string props)
+        {
+            if (props == null)
+            {
+                return BadRequest();
+            }
+
+            if (_context.Devices == null)
+            {
+                return NotFound();
+            }
+
+            string[] propArray = props.Split('+');
+            string sortField = propArray[0];
+            string sortOrder = propArray[1];
+            string page = propArray[2];
+            string perPage = propArray[3];
+
+            if (sortField == null || sortOrder == null || page == null || perPage == null)
+            {
+                return BadRequest();
+            }
+
+            var pageInt = Int32.Parse(page);
+            var perPageInt = Int32.Parse(perPage);
+
+            if (sortOrder == "ASC")
+            {
+                var device = _context.Devices
+                    .OrderBy("s=>s." + sortField)
+                    .AsEnumerable()
+                    .Where((s, i) => i >= (pageInt - 1) * perPageInt && i < pageInt * perPageInt && s.Name.Contains(name))
+                    .ToList();
+                return Ok(device);
+            }
+            else
+            {
+                var device = _context.Devices
+                    .OrderBy("s=>s." + sortField + " DESC")
+                    .AsEnumerable()
+                    .Where((s, i) => i >= (pageInt - 1) * perPageInt && i < pageInt * perPageInt && s.Name.Contains(name))
+                    .ToList();
+                return Ok(device);
+            }
+        }
+
         [HttpGet("GetMany/{ids}")]
         public async Task<ActionResult<IEnumerable<Models.Devices>>> GetManyDevices(string ids)
         {
